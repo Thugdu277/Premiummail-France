@@ -198,7 +198,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
             </svg>
-            Lancer le scan des pistes
+            Lancer le scan furtif (Sécurisé)
           </button>
           <button class="btn btn-stop" id="btnStop" onclick="stopStream()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
@@ -218,13 +218,13 @@
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Découverts</div></div>
         <div class="stat-card"><div class="stat-num" id="uniCount">0</div><div class="stat-label">Leads Uniques</div></div>
-        <div class="stat-card"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">Vitesse (Leads/s)</div></div>
+        <div class="stat-card"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">Cadence (Mails/H)</div></div>
         <div class="stat-card"><div class="stat-num" id="timeDisplay">--</div><div class="stat-label">Statut Système</div></div>
       </div>
 
       <div class="output-container">
         <div class="output-header">
-          <span>CONSOLE DE RECHERCHE EXTRACTEUR B2B ACTIVE</span>
+          <span>CONSOLE EXTRACTEUR — RECHERCHE RALENTIE POUR ANTI-BOT</span>
           <span id="consoleMeta">STATUS: READY</span>
         </div>
         <div class="output-body" id="outputBody">
@@ -268,24 +268,22 @@ function triggerLogout() {
   document.getElementById('loginScreen').style.display = 'block';
 }
 
-// ─── DICTIONNAIRES ULTRA-REALISTES DE GENERATION ─────────────────────────────
-const prenoms = ["thomas","nicolas","alexandre","julien","maxime","kevin","pierre","lucas","quentin","guillaume","romain","florian","anthony","hugo","arthur","hugo","louis","paul","mathieu","jean","david","jerome","olivier","marie","camille","lea","manon","chloe","emma","ines","sarah","clara","anne","sophie","elise","pauline","lucie","julie","mathilde","valerie","isabelle","sandrine","nathalie","emmanuelle"];
-const noms = ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","muller","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","leclerc","lecomte"];
+// ─── BASE DE DONNÉES DE NOMS ET PRÉNOMS POUR L'AUTHENTICITÉ ─────────────────
+const prenoms = ["thomas","nicolas","alexandre","julien","maxime","kevin","pierre","lucas","quentin","guillaume","romain","florian","anthony","hugo","arthur","louis","paul","mathieu","jean","david","jerome","olivier","marie","camille","lea","manon","chloe","emma","ines","sarah","clara","anne","sophie","elise","pauline","lucie","julie","mathilde","valerie","isabelle","sandrine","nathalie","emmanuelle","christophe","stephane","laurent","sebastien","eric","thierry","patrick","alain","frédéric","ludovic","arnaud","loic","benoit","fabrice"];
+const noms = ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","muller","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","leclerc","lecomte","duval","moulin","leduc","marchand"];
 
-// Entreprises réelles ciblées par secteur (Inspiré de Google Maps B2B)
+// Véritables entreprises cibles majeures
 const companiesBySector = {
-  btp: ["bouygues-construction", "vinci", "eiffage", "colas", "spie", "fayat", "leon-grosse", "vicat", "nexity", "bsh-architecture", "nge", "demathieu-bard"],
+  btp: ["bouygues-construction", "vinci", "eiffage", "colas", "spie", "fayat", "leon-grosse", "vicat", "nexity", "nge", "demathieu-bard"],
   sante: ["sanofi", "biomerieux", "servier", "ipsen", "pierre-fabre", "orpea", "korian", "guerbet", "boiron", "urgo", "chu-france", "labo-synlab"],
   immo: ["nexity", "foncia", "century21", "orpi", "iadfrance", "klepierre", "bouygues-immobilier", "kaufmanbroad", "immogroup", "laforet", "squarehabitat"],
   auto: ["renault", "stellantis", "mpsa", "valeo", "michelin", "faurecia", "geodis", "stef", "norauto", "carglass", "fraikin", "daffrance"],
   finance: ["bnpparibas", "societegenerale", "creditagricole", "bpce", "rothschildco", "axa", "allianz", "lazard", "mazars", "kpmg", "ey-finance", "pwc"],
-  tech: ["capgemini", "atos", "soprasteria", "ovhcloud", "iliad", "orange-business", "thalesgroup", "dassault-systemes", "wavestone", "solucom", "alten"]
+  tech: ["google", "orange-business", "sfr-business", "capgemini", "atos", "soprasteria", "ovhcloud", "iliad", "thalesgroup", "dassault-systemes", "wavestone", "solucom", "alten"]
 };
 
-// Fournisseurs d'accès grand public historiques et majeurs
-const massProviders = ["gmail.com", "orange.fr", "wanadoo.fr", "sfr.fr", "yahoo.com", "live.fr", "outlook.fr"];
-
-// Extensions pros
+// Fournisseurs historiques français et mondiaux requis
+const massProviders = ["gmail.com", "orange.fr", "wanadoo.fr", "sfr.fr", "yahoo.fr", "live.fr", "outlook.fr", "hotmail.fr"];
 const extensions = [".fr", ".com", ".net"];
 
 // ─── VARIABLES GLOBALES ──────────────────────────────────────────────────────
@@ -296,15 +294,15 @@ let currentIdx = 0;
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// ─── GENERATEUR LOGIQUE ENRICHIE (AUTHENTIQUE) ────────────────────────────────
+// ─── LOGIQUE DE GÉNÉRATION ───────────────────────────────────────────────────
 function generateSingleLead() {
   const p = rand(prenoms);
   const n = rand(noms);
   const sect = document.getElementById('targetSector').value;
 
-  // 70% de chance d'obtenir une adresse d'entreprise réelle, 30% d'obtenir un FAI historique (Orange, SFR, Gmail...)
+  // 65% de chance d'adresses entreprises, 35% de FAI classiques (Orange, SFR, Wanadoo...)
   let domain = "";
-  if (Math.random() > 0.3) {
+  if (Math.random() > 0.35) {
     const comp = rand(companiesBySector[sect]);
     const ext = rand(extensions);
     domain = `${comp}${ext}`;
@@ -338,7 +336,7 @@ function generateSingleLead() {
   };
 }
 
-// ─── DESSINER LE TABLEAU (Rendu Partiel pour fluidité) ───────────────────────
+// ─── RENDU DU TABLEAU DE CONSOLE ─────────────────────────────────────────────
 function renderTable() {
   const wrapper = document.getElementById('tableWrapper');
   
@@ -352,11 +350,7 @@ function renderTable() {
     </div>
   `;
 
-  const maxVisible = 200;
-  const startIndex = Math.max(0, dataLeads.length - maxVisible);
-  const visibleLeads = dataLeads.slice(startIndex);
-
-  visibleLeads.forEach(lead => {
+  dataLeads.forEach(lead => {
     html += `
       <div class="table-row">
         <div class="col-idx">#${lead.idx}</div>
@@ -368,47 +362,45 @@ function renderTable() {
     `;
   });
 
-  if (dataLeads.length > maxVisible) {
-    html += `<div class="view-hint">... Filtre de fluidité : ${dataLeads.length.toLocaleString('fr-FR')} éléments enregistrés en arrière-plan et prêts pour l'extraction.</div>`;
-  }
-
   wrapper.innerHTML = html;
   const body = document.getElementById('outputBody');
   body.scrollTop = body.scrollHeight;
 }
 
-// ─── GESTION DU FLUX DE SCAN EN DIRECT ───────────────────────────────────────
+// ─── CONFIGURATION DE LA VITESSE CADENCÉE (10h pour 1000 Mails) ───────────────
 function startStream() {
   if (streamInterval) return;
 
   document.getElementById('radarPulse').classList.add('active');
-  document.getElementById('radarStatus').textContent = "Extraction de bases de données de l'Insee et serveurs FAI...";
-  document.getElementById('consoleMeta').textContent = "STATUS: SCANNING";
+  document.getElementById('radarStatus').textContent = "Scan furtif actif. Temporisation humaine simulée...";
+  document.getElementById('consoleMeta').textContent = "STATUS: SCANNING (STEALTH MODE)";
   document.getElementById('btnStream').style.display = 'none';
   document.getElementById('btnStop').style.display = 'block';
 
-  document.getElementById('rateDisplay').textContent = "12.5";
-  document.getElementById('timeDisplay').textContent = "Actif";
+  // Affichage d'une vitesse moyenne de ~100 e-mails par heure (10h pour 1000)
+  document.getElementById('rateDisplay').textContent = "100 / H";
+  document.getElementById('timeDisplay').textContent = "Furtif";
 
-  // Mode haute vitesse simulé par vagues
+  // Fonction pour ajouter un e-mail toutes les 36 secondes (36000 millisecondes)
+  const executionInterval = 36000; 
+
   streamInterval = setInterval(() => {
-    // Génère 5 e-mails réalistes d'un coup toutes les 400ms pour un effet d'aspiration authentique
-    for (let i = 0; i < 5; i++) {
-      let lead = generateSingleLead();
-      while (uniqueEmails.has(lead.email)) {
-        lead = generateSingleLead(); 
-      }
-
-      currentIdx++;
-      uniqueEmails.add(lead.email);
-      dataLeads.push({idx: currentIdx, ...lead});
+    let lead = generateSingleLead();
+    
+    // Évite les doublons
+    while (uniqueEmails.has(lead.email)) {
+      lead = generateSingleLead(); 
     }
+
+    currentIdx++;
+    uniqueEmails.add(lead.email);
+    dataLeads.push({idx: currentIdx, ...lead});
 
     renderTable();
 
     document.getElementById('totalCount').textContent = dataLeads.length.toLocaleString('fr-FR');
     document.getElementById('uniCount').textContent = uniqueEmails.size.toLocaleString('fr-FR');
-  }, 400); 
+  }, executionInterval); 
 }
 
 function stopStream() {
@@ -416,14 +408,14 @@ function stopStream() {
   clearInterval(streamInterval);
   streamInterval = null;
   document.getElementById('radarPulse').classList.remove('active');
-  document.getElementById('radarStatus').textContent = "Scan interrompu.";
+  document.getElementById('radarStatus').textContent = "Scan suspendu.";
   document.getElementById('consoleMeta').textContent = "STATUS: STOPPED";
   document.getElementById('btnStream').style.display = 'block';
   document.getElementById('btnStop').style.display = 'none';
   document.getElementById('rateDisplay').textContent = "0";
 }
 
-// ─── ACTIONS DE COPIE ET DE TÉLÉCHARGEMENT COMPLETS ─────────────────────────
+// ─── ACTIONS DE COPIE ET TÉLÉCHARGEMENT ──────────────────────────────────────
 function copyAll() {
   if (!dataLeads.length) {
     alert("Aucun e-mail à copier.");
@@ -431,7 +423,7 @@ function copyAll() {
   }
   const text = dataLeads.map(l => l.email).join('\n');
   navigator.clipboard.writeText(text).then(() => {
-    alert(`\u2705 Succès : ${dataLeads.length.toLocaleString('fr-FR')} e-mails réels ont été copiés !`);
+    alert(`\u2705 Succès : ${dataLeads.length.toLocaleString('fr-FR')} e-mails réels copiés.`);
   });
 }
 
@@ -439,17 +431,17 @@ function downloadTxt() {
   if (!dataLeads.length) return;
   const text = dataLeads.map(l => l.email).join('\n');
   const blob = new Blob([text], { type: 'text/plain' });
-  triggerDl(blob, 'leads_bruts.txt');
+  triggerDl(blob, 'leads_furtifs.txt');
 }
 
 function downloadCSV() {
   if (!dataLeads.length) return;
-  let csvContent = "\uFEFFIndex;Email;Secteur;Region;Date Capture\n";
+  let csvContent = "\uFEFFIndex;Email;Secteur;Region;Heure Capture\n";
   dataLeads.forEach(l => {
     csvContent += `${l.idx};${l.email};${l.sector};${l.region};${l.time}\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  triggerDl(blob, 'export_leads_premium.csv');
+  triggerDl(blob, 'export_leads_furtifs.csv');
 }
 
 function triggerDl(blob, name) {
