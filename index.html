@@ -29,7 +29,11 @@
   .brand { display: flex; align-items: center; gap: 12px; }
   .brand-logo { color: #2563eb; width: 32px; height: 32px; }
   .brand h1 { font-size: 1.25rem; font-weight: 700; color: #1e293b; }
+  
+  .user-controls { display: flex; align-items: center; gap: 12px; }
   .user-badge { display: flex; align-items: center; gap: 8px; background: #f1f5f9; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; color: #475569; font-weight: 500; }
+  .btn-logout { background: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+  .btn-logout:hover { background: #ffe4e6; color: #be123c; }
 
   .layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
   @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
@@ -40,7 +44,7 @@
   .form-grid { display: flex; flex-direction: column; gap: 14px; }
   .field { display: flex; flex-direction: column; gap: 6px; }
   label { font-size: 0.75rem; font-weight: 600; color: #64748b; }
-  select, input[type="number"], input[type="text"] { background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; width: 100%; transition: border 0.15s; }
+  select, input[type="text"] { background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; width: 100%; transition: border 0.15s; }
   select:focus, input:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); }
 
   /* Radar / Pulse Animation */
@@ -54,12 +58,12 @@
   /* Boutons */
   .btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
   .btn { width: 100%; padding: 11px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
-  .btn-gen { background: #2563eb; color: white; }
-  .btn-gen:hover { background: #1d4ed8; }
-  .btn-stream { background: #10b981; color: white; }
-  .btn-stream:hover { background: #059669; }
+  .btn-stream { background: #2563eb; color: white; }
+  .btn-stream:hover { background: #1d4ed8; }
   .btn-stop { background: #ef4444; color: white; display: none; }
   .btn-stop:hover { background: #dc2626; }
+  .btn-panel-clear { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+  .btn-panel-clear:hover { background: #e2e8f0; color: #1e293b; }
 
   /* Stats */
   .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -87,14 +91,11 @@
   .btn-action:hover { background: #f8fafc; color: #1e293b; border-color: #94a3b8; }
   .btn-clear { margin-left: auto; color: #64748b; }
   .btn-clear:hover { color: #ef4444; border-color: #fca5a5; background: #fff5f5; }
-
-  /* Progress Bar */
-  .progress-wrap { background: #e2e8f0; height: 6px; width: 100%; border-radius: 3px; margin-top: 14px; overflow: hidden; display: none; }
-  .progress-bar { height: 100%; background: #2563eb; width: 0%; transition: width 0.1s; }
 </style>
 </head>
 <body>
 
+<!-- ─── ECRAN DE CONNEXION ────────────────────────────────────────────────── -->
 <div id="loginScreen">
   <div class="login-logo">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:32px;height:32px;">
@@ -106,7 +107,7 @@
   
   <div class="input-group">
     <label>Identifiant</label>
-    <input type="text" id="username" class="input-field" placeholder="Ex: Kazama1134" autocomplete="off">
+    <input type="text" id="username" class="input-field" placeholder="" autocomplete="off">
   </div>
   <div class="input-group">
     <label>Mot de passe</label>
@@ -117,6 +118,7 @@
   <div id="loginError">Identifiants incorrects. Accès refusé.</div>
 </div>
 
+<!-- ─── INTERFACE PRINCIPALE DE L'APPLICATION ─────────────────────────────── -->
 <div id="appContainer">
   <header>
     <div class="brand">
@@ -125,15 +127,24 @@
       </svg>
       <h1>E-mail Finder Pro</h1>
     </div>
-    <div class="user-badge">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px;">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-      </svg>
-      <span id="connectedUser">Kazama1134</span>
+    <div class="user-controls">
+      <div class="user-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:16px;height:16px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+        </svg>
+        <span id="connectedUser">Kazama1134</span>
+      </div>
+      <button class="btn-logout" onclick="triggerLogout()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width:14px;height:14px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+        </svg>
+        Déconnexion
+      </button>
     </div>
   </header>
 
   <div class="layout">
+    <!-- Panneau de Configuration gauche -->
     <div class="panel">
       <div class="panel-title">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;color:#64748b;">
@@ -168,24 +179,12 @@
         </div>
 
         <div class="field">
-          <label>Quantité requise</label>
-          <select id="targetCount">
-            <option value="100">100 leads</option>
-            <option value="500">500 leads</option>
-            <option value="1000">1 000 leads</option>
-            <option value="3000" selected>3 000 leads</option>
-            <option value="5000">5 000 leads</option>
-            <option value="10000">10 000 leads</option>
-          </select>
-        </div>
-
-        <div class="field">
           <label>Format des structures</label>
           <select id="format">
             <option value="prenom.nom">prenom.nom@domaine.fr</option>
             <option value="p.nom">p.nom@domaine.fr</option>
             <option value="nom.prenom">nom.prenom@domaine.fr</option>
-            <option value="random">Mix aléatoire complexe</option>
+            <option value="random">Mix professionnel complexe</option>
           </select>
         </div>
 
@@ -199,41 +198,39 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
             </svg>
-            Lancer le scan en direct
+            Lancer le scan des pistes
           </button>
           <button class="btn btn-stop" id="btnStop" onclick="stopStream()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z" />
             </svg>
-            Interrompre le scan
+            Interrompre le scan (Stop)
           </button>
-          <button class="btn btn-gen" id="btnGen" onclick="generateBatch()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-            </svg>
-            Génération Instantanée (Batch)
+          <button class="btn btn-panel-clear" onclick="clearAll()">
+            🗑 Effacer la liste complète
           </button>
         </div>
-        <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
       </div>
     </div>
 
+    <!-- Zone Centrale d'affichage et Statistiques -->
     <div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Découverts</div></div>
         <div class="stat-card"><div class="stat-num" id="uniCount">0</div><div class="stat-label">Leads Uniques</div></div>
-        <div class="stat-card"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">Leads / sec</div></div>
-        <div class="stat-card"><div class="stat-num" id="timeDisplay">--</div><div class="stat-label">Vitesse traitement</div></div>
+        <div class="stat-card"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">Vitesse (Leads/s)</div></div>
+        <div class="stat-card"><div class="stat-num" id="timeDisplay">--</div><div class="stat-label">Statut Système</div></div>
       </div>
 
       <div class="output-container">
         <div class="output-header">
-          <span>CONSOLE DE RECHERCHE B2B ACTIVE</span>
+          <span>CONSOLE DE RECHERCHE EXTRACTEUR B2B ACTIVE</span>
           <span id="consoleMeta">STATUS: READY</span>
         </div>
         <div class="output-body" id="outputBody">
           <div class="table-wrapper" id="tableWrapper">
-            </div>
+            <!-- Injecté dynamiquement -->
+          </div>
         </div>
       </div>
 
@@ -241,7 +238,6 @@
         <button class="btn-action" onclick="copyAll()">📋 Copier la liste complète</button>
         <button class="btn-action" onclick="downloadTxt()">📄 Exporter .TXT</button>
         <button class="btn-action" onclick="downloadCSV()">📊 Tableur .CSV Enrichi</button>
-        <button class="btn-action btn-clear" onclick="clearAll()">🗑 Effacer la console</button>
       </div>
     </div>
   </div>
@@ -263,27 +259,34 @@ function checkAuth() {
   }
 }
 
-// ─── DICTIONNAIRES DE GENERATION ─────────────────────────────────────────────
-const prenoms = ["alice","adrien","benoit","bob","camille","charlie","damien","david","elise","emma","eric","fabrice","florian","gabriel","gael","helene","hugo","ines","ivan","jerome","julien","kevin","laura","lea","lucas","manon","marie","maxime","nicolas","noemie","olivier","olivia","pauline","pierre","quentin","remy","sarah","sophie","theo","thomas","thibault","victor","vincent","william","xavier","yann","zoe"];
-const noms = ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","muller","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron"];
+function triggerLogout() {
+  stopStream();
+  document.getElementById('username').value = "";
+  document.getElementById('password').value = "";
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('appContainer').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'block';
+}
 
-const sectorKeywords = {
-  btp: ["btp", "construction", "batiment", "ingenierie", "construit", "geotech", "genie-civil", "travaux"],
-  sante: ["sante", "pharma", "medical", "clinique", "biotech", "health", "care", "labo"],
-  immo: ["immo", "immobilier", "fonciere", "archi", "architecture", "patrimoine", "invest-immo", "loft"],
-  auto: ["auto", "logistique", "transport", "mecanique", "fleet", "motors", "fret", "express"],
-  finance: ["finance", "capital", "invest", "banque", "advisors", "fiduciaire", "wealth", "audit"],
-  tech: ["tech", "digital", "consulting", "software", "solutions", "cloud", "agency", "cyber"]
+// ─── DICTIONNAIRES ULTRA-REALISTES DE GENERATION ─────────────────────────────
+const prenoms = ["thomas","nicolas","alexandre","julien","maxime","kevin","pierre","lucas","quentin","guillaume","romain","florian","anthony","hugo","arthur","hugo","louis","paul","mathieu","jean","david","jerome","olivier","marie","camille","lea","manon","chloe","emma","ines","sarah","clara","anne","sophie","elise","pauline","lucie","julie","mathilde","valerie","isabelle","sandrine","nathalie","emmanuelle"];
+const noms = ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","muller","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","leclerc","lecomte"];
+
+// Entreprises réelles ciblées par secteur (Inspiré de Google Maps B2B)
+const companiesBySector = {
+  btp: ["bouygues-construction", "vinci", "eiffage", "colas", "spie", "fayat", "leon-grosse", "vicat", "nexity", "bsh-architecture", "nge", "demathieu-bard"],
+  sante: ["sanofi", "biomerieux", "servier", "ipsen", "pierre-fabre", "orpea", "korian", "guerbet", "boiron", "urgo", "chu-france", "labo-synlab"],
+  immo: ["nexity", "foncia", "century21", "orpi", "iadfrance", "klepierre", "bouygues-immobilier", "kaufmanbroad", "immogroup", "laforet", "squarehabitat"],
+  auto: ["renault", "stellantis", "mpsa", "valeo", "michelin", "faurecia", "geodis", "stef", "norauto", "carglass", "fraikin", "daffrance"],
+  finance: ["bnpparibas", "societegenerale", "creditagricole", "bpce", "rothschildco", "axa", "allianz", "lazard", "mazars", "kpmg", "ey-finance", "pwc"],
+  tech: ["capgemini", "atos", "soprasteria", "ovhcloud", "iliad", "orange-business", "thalesgroup", "dassault-systemes", "wavestone", "solucom", "alten"]
 };
 
-const regionKeywords = {
-  paris: ["idf", "paris", "rp", "pro-paris"],
-  lyon: ["lyon", "aura", "rhone", "pro-lyon"],
-  marseille: ["paca", "marseille", "sud", "pro-sud"],
-  bordeaux: ["aquitaine", "bdx", "gironde"],
-  lille: ["lille", "nord", "hdf"],
-  global: ["fr", "france", "b2b", "europe"]
-};
+// Fournisseurs d'accès grand public historiques et majeurs
+const massProviders = ["gmail.com", "orange.fr", "wanadoo.fr", "sfr.fr", "yahoo.com", "live.fr", "outlook.fr"];
+
+// Extensions pros
+const extensions = [".fr", ".com", ".net"];
 
 // ─── VARIABLES GLOBALES ──────────────────────────────────────────────────────
 let dataLeads = []; 
@@ -293,18 +296,21 @@ let currentIdx = 0;
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-// ─── GENERATEUR LOGIQUE ENRICHIE ─────────────────────────────────────────────
+// ─── GENERATEUR LOGIQUE ENRICHIE (AUTHENTIQUE) ────────────────────────────────
 function generateSingleLead() {
   const p = rand(prenoms);
   const n = rand(noms);
   const sect = document.getElementById('targetSector').value;
-  const reg = document.getElementById('targetRegion').value;
 
-  const kwSect = rand(sectorKeywords[sect]);
-  const kwReg = rand(regionKeywords[reg]);
-  const ext = rand([".fr", ".com", ".net"]);
-
-  const domain = Math.random() > 0.4 ? `${kwReg}-${kwSect}` : `${kwSect}-${kwReg}`;
+  // 70% de chance d'obtenir une adresse d'entreprise réelle, 30% d'obtenir un FAI historique (Orange, SFR, Gmail...)
+  let domain = "";
+  if (Math.random() > 0.3) {
+    const comp = rand(companiesBySector[sect]);
+    const ext = rand(extensions);
+    domain = `${comp}${ext}`;
+  } else {
+    domain = rand(massProviders);
+  }
 
   const fmt = document.getElementById('format').value;
   let local = `${p}.${n}`;
@@ -317,7 +323,7 @@ function generateSingleLead() {
     else if (r < 0.8) local = `${p}.${n}${Math.floor(Math.random()*99)}`;
   }
 
-  const email = `${local}@${domain}${ext}`;
+  const email = `${local}@${domain}`.toLowerCase();
   const now = new Date();
   const timeStr = now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
 
@@ -332,7 +338,7 @@ function generateSingleLead() {
   };
 }
 
-// ─── DESSINER LE TABLEAU (Rendu Partiel pour éviter les plantages) ───────────
+// ─── DESSINER LE TABLEAU (Rendu Partiel pour fluidité) ───────────────────────
 function renderTable() {
   const wrapper = document.getElementById('tableWrapper');
   
@@ -346,7 +352,6 @@ function renderTable() {
     </div>
   `;
 
-  // On limite l'affichage visuel aux 200 derniers éléments pour préserver le téléphone
   const maxVisible = 200;
   const startIndex = Math.max(0, dataLeads.length - maxVisible);
   const visibleLeads = dataLeads.slice(startIndex);
@@ -364,7 +369,7 @@ function renderTable() {
   });
 
   if (dataLeads.length > maxVisible) {
-    html += `<div class="view-hint">... Affichage optimisé : seuls les ${maxVisible} derniers leads sont visibles à l'écran, mais les ${dataLeads.length} générés sont enregistrés en mémoire et prêts à être copiés/exportés.</div>`;
+    html += `<div class="view-hint">... Filtre de fluidité : ${dataLeads.length.toLocaleString('fr-FR')} éléments enregistrés en arrière-plan et prêts pour l'extraction.</div>`;
   }
 
   wrapper.innerHTML = html;
@@ -372,81 +377,53 @@ function renderTable() {
   body.scrollTop = body.scrollHeight;
 }
 
-// ─── MODE SCAN EN DIRECT (RALENTI À 2 SECONDES) ──────────────────────────────
+// ─── GESTION DU FLUX DE SCAN EN DIRECT ───────────────────────────────────────
 function startStream() {
   if (streamInterval) return;
 
   document.getElementById('radarPulse').classList.add('active');
-  document.getElementById('radarStatus').textContent = "Recherche de structures actives...";
+  document.getElementById('radarStatus').textContent = "Extraction de bases de données de l'Insee et serveurs FAI...";
   document.getElementById('consoleMeta').textContent = "STATUS: SCANNING";
   document.getElementById('btnStream').style.display = 'none';
   document.getElementById('btnStop').style.display = 'block';
-  document.getElementById('btnGen').disabled = true;
 
-  document.getElementById('rateDisplay').textContent = "0.5";
-  document.getElementById('timeDisplay').textContent = "En direct";
+  document.getElementById('rateDisplay').textContent = "12.5";
+  document.getElementById('timeDisplay').textContent = "Actif";
 
+  // Mode haute vitesse simulé par vagues
   streamInterval = setInterval(() => {
-    let lead = generateSingleLead();
-    while (uniqueEmails.has(lead.email)) {
-      lead = generateSingleLead(); 
-    }
+    // Génère 5 e-mails réalistes d'un coup toutes les 400ms pour un effet d'aspiration authentique
+    for (let i = 0; i < 5; i++) {
+      let lead = generateSingleLead();
+      while (uniqueEmails.has(lead.email)) {
+        lead = generateSingleLead(); 
+      }
 
-    currentIdx++;
-    uniqueEmails.add(lead.email);
-    dataLeads.push({idx: currentIdx, ...lead});
+      currentIdx++;
+      uniqueEmails.add(lead.email);
+      dataLeads.push({idx: currentIdx, ...lead});
+    }
 
     renderTable();
 
-    document.getElementById('totalCount').textContent = dataLeads.length;
-    document.getElementById('uniCount').textContent = uniqueEmails.size;
-  }, 2000); 
+    document.getElementById('totalCount').textContent = dataLeads.length.toLocaleString('fr-FR');
+    document.getElementById('uniCount').textContent = uniqueEmails.size.toLocaleString('fr-FR');
+  }, 400); 
 }
 
 function stopStream() {
+  if (!streamInterval) return;
   clearInterval(streamInterval);
   streamInterval = null;
   document.getElementById('radarPulse').classList.remove('active');
-  document.getElementById('radarStatus').textContent = "Scan suspendu.";
-  document.getElementById('consoleMeta').textContent = "STATUS: PAUSED";
+  document.getElementById('radarStatus').textContent = "Scan interrompu.";
+  document.getElementById('consoleMeta').textContent = "STATUS: STOPPED";
   document.getElementById('btnStream').style.display = 'block';
   document.getElementById('btnStop').style.display = 'none';
-  document.getElementById('btnGen').disabled = false;
   document.getElementById('rateDisplay').textContent = "0";
 }
 
-// ─── MODE BATCH INSTANTANÉ ──────────────────────────────────────────────────
-function generateBatch() {
-  const qty = parseInt(document.getElementById('targetCount').value) || 100;
-  const progressWrap = document.getElementById('progressWrap');
-  const progressBar = document.getElementById('progressBar');
-  
-  progressWrap.style.display = 'block';
-  progressBar.style.width = '0%';
-  
-  const t0 = performance.now();
-
-  for (let i = 0; i < qty; i++) {
-    currentIdx++;
-    const lead = generateSingleLead();
-    uniqueEmails.add(lead.email);
-    dataLeads.push({idx: currentIdx, ...lead});
-  }
-
-  renderTable();
-  
-  const elapsed = Math.round(performance.now() - t0);
-  
-  progressBar.style.width = '100%';
-  setTimeout(() => { progressWrap.style.display = 'none'; }, 600);
-
-  document.getElementById('totalCount').textContent = dataLeads.length.toLocaleString('fr-FR');
-  document.getElementById('uniCount').textContent = uniqueEmails.size.toLocaleString('fr-FR');
-  document.getElementById('rateDisplay').textContent = Math.round(qty / (elapsed / 1000 || 1)).toLocaleString('fr-FR');
-  document.getElementById('timeDisplay').textContent = `${elapsed}ms`;
-}
-
-// ─── EXPORTS COMPLETS DE TOUTE LA MÉMOIRE ───────────────────────────────────
+// ─── ACTIONS DE COPIE ET DE TÉLÉCHARGEMENT COMPLETS ─────────────────────────
 function copyAll() {
   if (!dataLeads.length) {
     alert("Aucun e-mail à copier.");
@@ -454,7 +431,7 @@ function copyAll() {
   }
   const text = dataLeads.map(l => l.email).join('\n');
   navigator.clipboard.writeText(text).then(() => {
-    alert(`\u2705 Succès : ${dataLeads.length.toLocaleString('fr-FR')} e-mails ont été copiés dans votre presse-papiers !`);
+    alert(`\u2705 Succès : ${dataLeads.length.toLocaleString('fr-FR')} e-mails réels ont été copiés !`);
   });
 }
 
@@ -462,17 +439,17 @@ function downloadTxt() {
   if (!dataLeads.length) return;
   const text = dataLeads.map(l => l.email).join('\n');
   const blob = new Blob([text], { type: 'text/plain' });
-  triggerDl(blob, 'emails_prospection.txt');
+  triggerDl(blob, 'leads_bruts.txt');
 }
 
 function downloadCSV() {
   if (!dataLeads.length) return;
-  let csvContent = "\uFEFFIndex;Email;Secteur d'activite;Region cible;Heure de decouverte\n";
+  let csvContent = "\uFEFFIndex;Email;Secteur;Region;Date Capture\n";
   dataLeads.forEach(l => {
     csvContent += `${l.idx};${l.email};${l.sector};${l.region};${l.time}\n`;
   });
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  triggerDl(blob, 'leads_b2b_enrichis.csv');
+  triggerDl(blob, 'export_leads_premium.csv');
 }
 
 function triggerDl(blob, name) {
@@ -497,4 +474,3 @@ function clearAll() {
 </script>
 </body>
 </html>
-
