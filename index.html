@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur d'Emails — Test Entreprise</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; padding: 20px; }
+
+  h1 { font-size: 1.3rem; font-weight: 700; color: #38bdf8; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+
+  .controls {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  input[type="number"], select {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    width: 150px;
+  }
+
+  .extensions-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    max-width: 400px;
+    min-width: 200px;
+  }
+
+  .ext-tag {
+    background: #1e3a5f;
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .ext-tag.off { background: #1e293b; border-color: #334155; color: #475569; }
+
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-gen   { background: #38bdf8; color: #0f172a; }
+  .btn-gen:hover { background: #0ea5e9; }
+  .btn-stream { background: #22c55e; color: #0f172a; }
+  .btn-stream:hover { background: #16a34a; }
+  .btn-stop  { background: #ef4444; color: white; }
+  .btn-stop:hover { background: #dc2626; }
+  .btn-copy  { background: #334155; color: #e2e8f0; }
+  .btn-copy:hover { background: #475569; }
+  .btn-clear { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+
+  .stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: #1e293b;
+    border-radius: 10px;
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: #38bdf8; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 0.68rem; color: #64748b; margin-top: 2px; }
+
+  .progress-bar-wrap {
+    background: #1e293b;
+    border-radius: 6px;
+    height: 6px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    display: none;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    border-radius: 6px;
+    transition: width 0.1s;
+    width: 0%;
+  }
+
+  .output {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 14px;
+    height: 360px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    line-height: 1.75;
+    border: 1px solid #334155;
+  }
+  .email-line { color: #a3e635; }
+  .email-line span { color: #475569; margin-right: 8px; font-size: 0.68rem; }
+
+  .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  .custom-ext {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.88rem;
+    width: 110px;
+  }
+  .add-ext-btn {
+    background: #334155;
+    color: #e2e8f0;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    background: #0ea5e9;
+    color: #0f172a;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 700;
+  }
+
+  .hint { font-size: 0.72rem; color: #64748b; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>⚡ Générateur d'Emails <span class="badge">HAUTE PERF</span></h1>
+
+<div class="controls">
+
+  <div class="field">
+    <label>Quantité cible</label>
+    <select id="targetCount">
+      <option value="1000">1 000</option>
+      <option value="5000" selected>5 000</option>
+      <option value="10000">10 000</option>
+      <option value="25000">25 000</option>
+      <option value="50000">50 000</option>
+      <option value="100000">100 000</option>
+      <option value="custom">Personnalisé</option>
+    </select>
+  </div>
+
+  <div class="field" id="customField" style="display:none">
+    <label>Quantité exacte</label>
+    <input type="number" id="customCount" value="5000" min="100" max="500000" step="100">
+  </div>
+
+  <div class="field">
+    <label>Format du nom</label>
+    <select id="format">
+      <option value="random">Aléatoire (mixte)</option>
+      <option value="prenom.nom">prenom.nom</option>
+      <option value="prenomnom">prenomnom</option>
+      <option value="p.nom">p.nom</option>
+      <option value="nom.prenom">nom.prenom</option>
+      <option value="prenom_nom">prenom_nom</option>
+      <option value="prenom">prenom seul</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Extensions actives</label>
+    <div class="extensions-box" id="extBox"></div>
+  </div>
+
+  <div class="field">
+    <label>+ Extension</label>
+    <div style="display:flex;gap:6px;">
+      <input class="custom-ext" type="text" id="customExt" placeholder=".io">
+      <button class="add-ext-btn" onclick="addCustomExt()">+</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Chiffres</label>
+    <select id="withNumbers">
+      <option value="sometimes">Parfois (~35%)</option>
+      <option value="never">Jamais</option>
+      <option value="always">Toujours</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Doublons</label>
+    <select id="dedup">
+      <option value="yes">Emails uniques uniquement</option>
+      <option value="no">Autoriser les doublons</option>
+    </select>
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <button class="btn btn-gen" onclick="generateBatch()">⚡ Générer tout</button>
+    <button class="btn btn-stream" onclick="startStream()">▶ En direct</button>
+    <button class="btn btn-stop" onclick="stopStream()">⏹ Stop</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Générés</div></div>
+  <div class="stat"><div class="stat-num" id="uniCount">0</div><div class="stat-label">Uniques</div></div>
+  <div class="stat"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">/ sec (live)</div></div>
+  <div class="stat"><div class="stat-num" id="timeDisplay">0ms</div><div class="stat-label">Durée batch</div></div>
+</div>
+
+<div class="progress-bar-wrap" id="progressWrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<div class="output" id="output"></div>
+
+<div class="actions">
+  <button class="btn btn-copy" onclick="copyAll()">📋 Copier tout</button>
+  <button class="btn btn-copy" onclick="downloadTxt()">📄 .TXT</button>
+  <button class="btn btn-copy" onclick="downloadCSV()">📊 .CSV</button>
+  <button class="btn btn-clear" onclick="clearAll()">🗑 Vider</button>
+</div>
+<div class="hint" style="margin-top:8px;">⚡ Mode batch : génère 5 000 emails en ~50ms | ▶ Mode direct : affichage en temps réel</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const prenoms = [
+  "alice","bob","charlie","david","emma","florian","gabriel","hugo","ines","julien",
+  "kevin","laura","marie","nicolas","olivia","pierre","quentin","rachel","sophie","thomas",
+  "ugo","valerie","william","xavier","yann","zoe","adrien","beatrice","clement","diane",
+  "eric","fabrice","gael","helene","ivan","jessica","lucas","manon","noemie","olivier",
+  "pauline","remy","sarah","thibault","ursula","vincent","wendy","alicia","benoit","camille",
+  "delphine","edouard","fanny","gregoire","hannah","igor","jade","karine","lea","maxime",
+  "nadine","oscar","patricia","rodrigo","stephane","tatiana","victor","wanda","axel","baptiste",
+  "chloe","damien","elise","francois","gaelle","harold","isabelle","jerome","katia","lionel",
+  "maud","nathalie","philippe","quentin","regis","sandrine","theo","ulrike","vanessa","zacharie"
+];
+
+const noms = [
+  "martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon",
+  "laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel",
+  "girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand",
+  "garnier","faure","rousseau","blanc","guerin","muller","henry","roussel","nicolas","perrin",
+  "morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin",
+  "masson","olivier","georges","renard","leroy","blanchard","carpentier","gilles","prevot","sauvage",
+  "barbier","lemaire","boucher","paris","adam","rey","millet","bourgeois","hubert","ferry",
+  "poirier","aubry","brochard","colin","daumas","etienne","fiquet","gonin","hardy","imbert"
+];
+
+// Pool unique : domaines FR + internationaux mélangés, tous compatibles avec n'importe quelle extension
+// (orange.fr, orange.com, sfr.fr, gmail.com, yahoo.fr... tous réels)
+const allDomains = [
+  // Français (fort taux pour réalisme FR)
+  "orange","orange","orange",
+  "sfr","sfr","sfr",
+  "wanadoo","wanadoo",
+  "free","free",
+  "laposte","laposte",
+  "bbox",
+  "numericable",
+  "neuf",
+  "club-internet",
+  "alice",
+  // Internationaux (très utilisés en France aussi)
+  "gmail","gmail","gmail","gmail",
+  "yahoo","yahoo","yahoo",
+  "hotmail","hotmail","hotmail",
+  "outlook","outlook",
+  "live","live",
+  "icloud",
+  "protonmail",
+  "aol",
+  "zoho",
+  "gmx",
+  "msn",
+  "fastmail",
+  "tutanota"
+];
+
+const defaultExts = [".fr",".com",".net",".org",".eu",".io",".co",".info",".biz",".me"];
+let activeExts = new Set([".fr",".com",".net",".org"]);
+let allEmails = [];
+let generated = new Set();
+let streamInterval = null;
+let rateCount = 0;
+let rateInterval = null;
+
+// ─── EXT TAGS ────────────────────────────────────────────────────────────────
+function buildExtTags() {
+  const box = document.getElementById('extBox');
+  box.innerHTML = '';
+  defaultExts.forEach(ext => {
+    const tag = document.createElement('div');
+    tag.className = 'ext-tag' + (activeExts.has(ext) ? '' : ' off');
+    tag.textContent = ext;
+    tag.onclick = () => {
+      if (activeExts.has(ext)) { activeExts.delete(ext); tag.classList.add('off'); }
+      else { activeExts.add(ext); tag.classList.remove('off'); }
+    };
+    box.appendChild(tag);
+  });
+}
+buildExtTags();
+
+function addCustomExt() {
+  let val = document.getElementById('customExt').value.trim();
+  if (!val) return;
+  if (!val.startsWith('.')) val = '.' + val;
+  if (!defaultExts.includes(val)) { defaultExts.push(val); activeExts.add(val); buildExtTags(); }
+  document.getElementById('customExt').value = '';
+}
+
+document.getElementById('targetCount').addEventListener('change', function() {
+  document.getElementById('customField').style.display = this.value === 'custom' ? 'flex' : 'none';
+});
+
+// ─── CORE GENERATOR ──────────────────────────────────────────────────────────
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function randNum(max) { return Math.floor(Math.random() * max) + 1; }
+
+function getTargetQty() {
+  const sel = document.getElementById('targetCount').value;
+  return sel === 'custom' ? (parseInt(document.getElementById('customCount').value) || 5000) : parseInt(sel);
+}
+
+function buildLocal(format, p, n) {
+  let fmt = format;
+  if (fmt === 'random') fmt = rand(['prenom.nom','prenomnom','p.nom','nom.prenom','prenom_nom','prenom']);
+  switch(fmt) {
+    case 'prenom.nom':  return `${p}.${n}`;
+    case 'prenomnom':   return `${p}${n}`;
+    case 'p.nom':       return `${p[0]}.${n}`;
+    case 'nom.prenom':  return `${n}.${p}`;
+    case 'prenom_nom':  return `${p}_${n}`;
+    case 'prenom':      return p;
+    default:            return `${p}.${n}`;
+  }
+}
+
+function buildEmail() {
+  const exts   = [...activeExts];
+  if (!exts.length) return null;
+  const withNum = document.getElementById('withNumbers').value;
+  const format  = document.getElementById('format').value;
+
+  const p   = rand(prenoms);
+  const n   = rand(noms);
+  const ext = rand(exts);
+
+  const d = rand(allDomains);
+
+  let local = buildLocal(format, p, n);
+
+  if (withNum === 'always') local += randNum(9999);
+  else if (withNum === 'sometimes' && Math.random() < 0.35) local += randNum(999);
+
+  return `${local}@${d}${ext}`;
+}
+
+// ─── BATCH (ultra-rapide, pas d'affichage ligne par ligne) ────────────────────
+function generateBatch() {
+  const qty    = getTargetQty();
+  const dedup  = document.getElementById('dedup').value === 'yes';
+  const exts   = [...activeExts];
+  if (!exts.length) { alert('Sélectionne au moins une extension.'); return; }
+
+  const progressWrap = document.getElementById('progressWrap');
+  const progressBar  = document.getElementById('progressBar');
+  progressWrap.style.display = 'block';
+  progressBar.style.width = '0%';
+
+  const t0 = performance.now();
+  const batch = [];
+  let attempts = 0;
+  const maxAttempts = qty * 3;
+
+  while (batch.length < qty && attempts < maxAttempts) {
+    attempts++;
+    const email = buildEmail();
+    if (!email) break;
+    if (dedup && generated.has(email)) continue;
+    batch.push(email);
+    if (dedup) generated.add(email);
+    else generated.add(email);
+  }
+
+  allEmails = allEmails.concat(batch);
+  const elapsed = Math.round(performance.now() - t0);
+
+  // Render (affiche les 500 derniers dans le DOM, tout est en mémoire)
+  const out = document.getElementById('output');
+  out.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  const startIdx = Math.max(0, allEmails.length - 500);
+  for (let i = startIdx; i < allEmails.length; i++) {
+    const line = document.createElement('div');
+    line.className = 'email-line';
+    line.innerHTML = `<span>#${i+1}</span>${allEmails[i]}`;
+    fragment.appendChild(line);
+  }
+  out.appendChild(fragment);
+  out.scrollTop = out.scrollHeight;
+
+  progressBar.style.width = '100%';
+  setTimeout(() => { progressWrap.style.display = 'none'; }, 800);
+
+  document.getElementById('totalCount').textContent = allEmails.length.toLocaleString('fr');
+  document.getElementById('uniCount').textContent   = generated.size.toLocaleString('fr');
+  document.getElementById('timeDisplay').textContent = elapsed < 1000 ? `${elapsed}ms` : `${(elapsed/1000).toFixed(1)}s`;
+}
+
+// ─── STREAM (affichage live) ──────────────────────────────────────────────────
+function startStream() {
+  if (streamInterval) return;
+  const exts = [...activeExts];
+  if (!exts.length) { alert('Sélectionne au moins une extension.'); return; }
+
+  rateInterval = setInterval(() => {
+    document.getElementById('rateDisplay').textContent = rateCount.toLocaleString('fr');
+    rateCount = 0;
+  }, 1000);
+
+  const out = document.getElementById('output');
+  const dedup = document.getElementById('dedup').value === 'yes';
+  const BATCH_PER_TICK = 5; // emails par tick (60fps-ish)
+
+  streamInterval = setInterval(() => {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i < BATCH_PER_TICK; i++) {
+      const email = buildEmail();
+      if (!email) continue;
+      if (dedup && generated.has(email)) continue;
+      allEmails.push(email);
+      generated.add(email);
+      rateCount++;
+      const line = document.createElement('div');
+      line.className = 'email-line';
+      line.innerHTML = `<span>#${allEmails.length}</span>${email}`;
+      fragment.appendChild(line);
+    }
+    out.appendChild(fragment);
+    out.scrollTop = out.scrollHeight;
+    while (out.children.length > 500) out.removeChild(out.firstChild);
+
+    document.getElementById('totalCount').textContent = allEmails.length.toLocaleString('fr');
+    document.getElementById('uniCount').textContent   = generated.size.toLocaleString('fr');
+  }, 16); // ~60 fps → ~300/sec
+}
+
+function stopStream() {
+  clearInterval(streamInterval);
+  clearInterval(rateInterval);
+  streamInterval = null;
+  rateInterval   = null;
+  document.getElementById('rateDisplay').textContent = '0';
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────────────────────
+function copyAll() {
+  if (!allEmails.length) return;
+  navigator.clipboard.writeText(allEmails.join('\n'))
+    .then(() => alert(`✅ ${allEmails.length.toLocaleString('fr')} emails copiés !`));
+}
+
+function downloadTxt() {
+  if (!allEmails.length) return;
+  const blob = new Blob([allEmails.join('\n')], { type: 'text/plain' });
+  dl(blob, 'emails_test.txt');
+}
+
+function downloadCSV() {
+  if (!allEmails.length) return;
+  const blob = new Blob(['email\n' + allEmails.join('\n')], { type: 'text/csv' });
+  dl(blob, 'emails_test.csv');
+}
+
+function dl(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+}
+
+function clearAll() {
+  stopStream();
+  allEmails = [];
+  generated = new Set();
+  document.getElementById('output').innerHTML = '';
+  ['totalCount','uniCount','rateDisplay'].forEach(id => document.getElementById(id).textContent = '0');
+  document.getElementById('timeDisplay').textContent = '0ms';
+}
+</script>
+</body>
+</html>
