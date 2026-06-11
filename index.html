@@ -1,431 +1,461 @@
-// ══════════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════════
-function doLogin() {
-  const u = document.getElementById('loginUser').value.trim();
-  const p = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginError');
-  if (u === 'Kazama1134' && p === 'Trillions2605') {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appScreen').style.display = 'block';
-    updateVilles();
-    err.style.display = 'none';
-  } else {
-    err.style.display = 'block';
-    document.getElementById('loginPass').value = '';
-  }
-}
-function doLogout() {
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-  clearAll();
-}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-mail Finder Pro</title>
+    <!-- Vous pouvez insérer vos styles CSS ici si vous en avez -->
+    <style>
+        /* Vos styles CSS existants peuvent être placés ici */
+        body { font-family: sans-serif; padding: 20px; }
+    </style>
+</head>
+<body>
 
-// ══════════════════════════════════════════════════════
-// DATA (Côte d'Ivoire entièrement retirée)
-// ══════════════════════════════════════════════════════
-const VILLES = {
-  fr: ["Toutes villes","Paris","Lyon","Marseille","Toulouse","Bordeaux","Nantes","Lille","Strasbourg","Rennes","Montpellier","Nice","Grenoble","Toulon","Dijon","Angers","Reims","Rouen","Saint-Étienne","Douarnenez","Brest","Quimper","Rennes","Caen","Clermont-Ferrand","Orléans","Metz","Besançon","Nancy","Tours"],
-  be: ["Toutes villes","Bruxelles","Liège","Gand","Anvers","Charleroi","Mons","Namur","Bruges","Louvain"],
-  ch: ["Toutes villes","Zurich","Genève","Berne","Bâle","Lausanne","Lugano","Winterthour","St-Gall"],
-  ca: ["Toutes villes","Montréal","Toronto","Vancouver","Québec","Ottawa","Calgary","Edmonton","Winnipeg"],
-  ma: ["Toutes villes","Casablanca","Rabat","Marrakech","Fès","Tanger","Agadir","Meknès","Oujda"],
-  sn: ["Toutes villes","Dakar","Thiès","Kaolack","Ziguinchor","Saint-Louis","Rufisque","Diourbel"],
-  tn: ["Toutes villes","Tunis","Sfax","Sousse","Kairouan","Bizerte","Gabès","Ariana","Gafsa"],
-  de: ["Toutes villes","Berlin","Munich","Hambourg","Cologne","Francfort","Stuttgart","Düsseldorf","Leipzig"],
-  es: ["Toutes villes","Madrid","Barcelone","Valence","Séville","Saragosse","Málaga","Bilbao","Murcie"],
-  it: ["Toutes villes","Rome","Milan","Naples","Turin","Palerme","Gênes","Bologne","Florence"],
-  uk: ["Toutes villes","Londres","Birmingham","Manchester","Leeds","Glasgow","Liverpool","Bristol","Sheffield"]
-};
+    <!-- L'interface de votre application (écrans de connexion et de l'app) doit être ici -->
+    <div id="loginScreen">
+        <input type="text" id="loginUser" placeholder="Utilisateur">
+        <input type="password" id="loginPass" placeholder="Mot de passe">
+        <button onclick="doLogin()">Connexion</button>
+        <p id="loginError" style="display:none; color:red;">Identifiants incorrects</p>
+    </div>
 
-const DOMAINES_LOCAUX = {
-  fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf"],
-  be:  ["skynet","telenet","proximus"],
-  ch:  ["bluewin","swissmail"],
-  ca:  ["videotron","bell","rogers"],
-  ma:  ["menara","iam"],
-  sn:  ["orange","expresso"],
-  tn:  ["topnet","gnet","hexabyte"],
-  de:  ["gmx","web","t-online","freenet"],
-  es:  ["telefonica","terra"],
-  it:  ["libero","virgilio","tiscali"],
-  uk:  ["btinternet","sky","virgin"]
-};
+    <div id="appScreen" style="display:none;">
+        <!-- Vos sélecteurs, boutons, barres de progression et tableaux vont ici -->
+        <select id="pays" onchange="updateVilles()">
+            <option value="fr">France</option>
+            <option value="be">Belgique</option>
+            <option value="ch">Suisse</option>
+        </select>
+        <select id="ville"></select>
+        <select id="secteur">
+            <option value="all">Général</option>
+        </select>
+        <select id="targetCount" onchange="toggleCustom()">
+            <option value="100">100</option>
+            <option value="custom">Personnalisé</option>
+        </select>
+        <div id="customField" style="display:none;">
+            <input type="number" id="customCount" value="500">
+        </div>
+        
+        <button onclick="startScan()">Démarrer</button>
+        <button onclick="stopScan()">Arrêter</button>
+        <button onclick="clearAll()">Vider</button>
+        
+        <div id="scanDot"></div>
+        <div id="scanLabel">En attente</div>
+        <div id="scanTarget">—</div>
+        <div id="progressBar" style="width:0%; height:10px; background:blue;"></div>
+        
+        <div>Total: <span id="statTotal">0</span> | Uniques: <span id="statUniq">0</span> | Débit: <span id="statRate">0</span>/m</div>
+        <div id="resultsCount">0 email(s)</div>
+        
+        <table>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
 
-const DOMAINES_GLOBAUX = [
-  { d:"gmail",     ext:".com" },
-  { d:"yahoo",     ext:".com" },
-  { d:"hotmail",   ext:".com" },
-  { d:"outlook",   ext:".com" },
-  { d:"live",      ext:".com" },
-  { d:"proton",    ext:".me"  },
-  { d:"icloud",    ext:".com" },
-  { d:"pm",        ext:".me"  },
-];
-
-const EXT_PAYS = {
-  fr:".fr", be:".be", ch:".ch", ca:".ca", ma:".ma", sn:".sn", tn:".tn", de:".de", es:".es", it:".it", uk:".co.uk"
-};
-
-const PRENOMS = {
-  fr: ["abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdoullah","abel","achille","adam","adeline","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adelaide","agathe","aglae","agnes","ahmad","ahmed","aimery","aime","aimee","alain","alan","alban","albert","albertine","alberto","albin","albine","albino","alberic","aldo","alec","alessandra","alessandro","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aline","alison","alistair","allan","allen","alphonse","amanda","amandine","amar","amaury","ambroise","amel","amina","amelie","anais","andrea","andreas","andrew","andre","andree","ange","angel","angelina","angelo","angie","angele","angelique","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anthony","antoine","antoinette","antoni","antonio","antony","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arthur","arturo","astrid","aude","audebert","audrey","augusta","auguste","augustin","augusto","aurore","aurelia","aureliane","aurelie","aurelien","axel","axelle","aymar","aymeric","aicha","bahia","baptiste","barbara","bart","barthelemy","basile","bastien","baudoin","benaicha","benjamin","benjamine","benoit","bernadette","bernard","bernhard","bertrand","betty","bianca","bill","bjorn","blaise","blanche","blandine","boris","brahim","brian","brice","brigitte","bruce","bruno","beatrice","benedicte","berangere","berengere","cameron","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","catherine","cathie","cathy","cendrine","cerise","chantal","charles","charlie","charline","charlotte","charly","charlene","chiara","chloe","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christele","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotilde","clemence","clement","colette","colin","concepcion","constance","constant","constantin","coralie","corine","corinne","cynthia","cyprien","cyril","cyrille","cecil","cecile","cecilia","cedric","celia","celine","cesar","daisy","dalida","damien","dan","daniel","daniela","danielle","daniele","daphne","dario","darlene","darren","david","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonne","dimitri","diogo","djamel","djamila","dolores","domingos","dominique","donald","dorothy","dorothee","douglas","dounia","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","elena","eliane","elisabeth","elizabeth","eloise","elsa","elvire","eleonore","emily","emma","emmanuel","emmanuelle","enrico","enzo","eric","erick","erik","erika","ernest","ernst","erwan","erwann","erwin","estelle","esther","etiennette","eudes","eugenio","eugene","eugenie","evangeline","eve","eveline","evelyn","evelyne","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fanny","farid","faridah","fatiha","fatima","fatma","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","flavie","flavien","flavio","fleur","florence","florent","florian","floriane","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","francois","francoise","freddy","frederick","frederico","frederik","friedrich","fritz","frederic","frederique","felix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gary","gaspard","gaston","gael","gaelle","gaetan","genevieve","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","ghislain","ghislaine","gianfranco","gianni","gil","gilbert","gilberte","gildas","gilles","ginette","gino","giorgio","giovanni","giselle","gislain","gisele","giuseppe","gladys","gontrand","gonzague","gordon","gottfried","graham","grace","gregoire","gregor","gregory","guido","guillaume","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenael","gwenaelle","gwendoline","gerald","geraldine","gerard","geraud","habib","hans","harold","hassan","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermann","herve","honore","houria","hubert","hugues","huguette","helene","helena","ian","igor","ingrid","ines","irma","irene","isaac","isabel","isabelle","isidore","issam","ivan","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jamel","james","jamila","jan","jane","janine","jannick","jason","jean","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","jimmy","joachim","joanna","joao","joaquim","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jonas","jonathan","jorg","jorge","jorgen","joselaine","joseph","josephus","josette","josiane","jose","josee","josephine","jozef","joel","joelle","juan","judith","jules","julia","juliana","julie","julien","juliette","jurgen","justine","jeremie","jerome","jesus","kadyja","kamel","karen","karim","karima","karin","karina","karine","karl","katerine","kathleen","katia","katy","keith","kelly","kenneth","kenny","kevin","khaled","klaus","kristel","kurt","laetitia","lamia","lana","lars","laura","laure","laureline","laurence","laurent","lauretta","lauriane","laurie","lawrence","leila","lelia","leonardo","leslie","lia","lila","lilian","liliane","lina","linda","line","linette","lionel","lisa","lise","lorenzo","loriane","lorianne","lorraine","louis","louisa","louise","louisette","loic","luc","luca","lucas","lucette","lucia","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludovic","luigi","luis","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","lea","leo","leon","leonard","leone","leonie","leopold","macha","madeleine","madeline","madiha","magali","magalie","magaly","magdeleine","maggy","magnus","malcolm","malik","malika","manfred","manon","manuel","manuela","marc","marcel","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariana","marianna","marianne","marie","marielle","marieva","marilyn","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlene","marta","marthe","martial","martin","martine","martino","mary","marylaine","maryline","marylise","marylou","marylene","maryse","maryvonne","massimiliano","massimo","mathias","mathieu","mathilde","matthew","matthias","matthieu","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maya","maeva","maite","melinda","mercedes","messaoud","messaouda","michael","michel","micheline","michelle","michele","mickael","miguel","mikael","miloud","mireille","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mounia","mounir","mourad","moise","muguette","muriel","murielle","mustapha","mylene","myriam","myrna","melanie","melodie","nadia","nadine","nadege","nancy","nasser","natacha","natanael","nathalie","nathan","nathanael","nathaniel","neil","nelly","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","nina","nino","nissim","nolwenn","nora","norbert","nourdine","noemie","noel","noelle","octave","oceane","odette","odile","olga","oliver","olivia","olivier","olympia","omar","oriane","oscar","oswald","otto","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","pauline","paulo","pedro","peggy","perrine","peter","petrus","philip","philippe","philomene","pierre","pierrette","pierric","pierrick","pietro","prisca","quentin","rachel","rachid","rafael","raffael","raimondo","ralf","ralph","ramon","raoul","raphael","raphaelle","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","rene","renee","reynald","reza","riccardo","richard","rita","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigues","roger","roland","rolande","rolf","rolland","romain","romano","romuald","romeo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","rudi","rudolf","rudolph","rudy","regine","regis","remi","remy","renata","sabine","sabrina","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sandie","sandra","sandrine","sara","sarah","said","sebastian","serge","sergio","servane","shirley","simon","simone","slimane","soazig","sofia","solange","solene","sonia","sonya","sophia","sophie","soraya","souad","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stephan","stephane","stephanie","susan","suzanne","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sebastien","severine","tanguy","tania","tatiana","theodor","thibaud","thibault","thibaut","thierry","thomas","theodore","theophile","therese","tiffany","timothy","tito","tobias","tom","tommy","tony","tristan","ugo","ulrich","ulysse","umberto","valentine","valerie","valery","vanessa","vanina","vicente","victoire","victor","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vladimir","veronique","walter","warren","werner","wilfrid","wilfried","willem","william","willy","wladimir","wolfgang","xavier","yann","yannick","yasmina","yasmine","yael","yohan","yohann","yolande","yolene","youssef","yvan","yveline","yves","yvette","yvon","yvonne","zoubida","edith","eglantine","elie","elisa","elise","eliza","elodie","emeline","emile","emilia","emilie","etienne","eva","adele","albane","aliette","alix","alizee","ambre","amedee","angeline","antonin","arsene","aubin","auriane","barnabe","baudouin","berenice","bertin","benoite","chimene","clementine","corentin","donatien","dorian","doriane","eloi","emilien","evariste","flore","florentine","florine","garence","gautier","godefroy","heloise","hortense","jasmine","joanne","jocelyn","julienne","justin","lambert","laurette","leopoldine","marcelin","marin","mathis","maximilienne","megane","milene","ophelie","paulin","philippine","rejane","rodrigue","romane","segolene","sibylle","timothee","tiphaine","ursule","valentin","vivien","zacharie","zoe"],
-  be: ["axel","brice","celine","dominique","emile","francoise","gerard","hilde","isabelle","jan","koen","lien","marc","nathalie","olivier","patricia","quentin","roos","stefan","tine","ulrike","veerle","wout","xavier","yves","zoe"],
-  ch: ["alex","beat","carmen","daniel","eva","felix","gabi","hans","irene","jakob","kurt","lena","marco","nina","otto","petra","rolf","sarah","thomas","ursula","victor","walter","xenia","yves","zara"],
-  ca: ["alex","brigitte","charles","diane","etienne","francine","gabriel","helene","ivan","josee","kevin","lucie","marc","nadine","olivier","pascale","quentin","rachel","simon","therese","ulric","valerie","william","xavier","yvonne","zacharie"],
-  ma: ["amine","bilal","chaimae","driss","fatima","hamza","imane","jalil","kenza","leila","mehdi","nadia","omar","rachid","samir","tariq","widad","youssef","zineb","abdelali","bouchra","charaf","dounia"],
-  sn: ["aissatou","boubacar","cheikh","dieynaba","elhadj","fatoumata","gorgui","hadja","ibrahima","jainaba","khady","lamine","mamadou","ndieye","oumar","pape","rokhaya","serigne","thierno","umu"],
-  tn: ["ahmed","bilel","chaima","dhia","emna","farouk","ghada","hamdi","imen","jamel","khaled","leila","mehdi","nesrine","omar","rahma","sami","tarek","wafa","youssef","zied"],
-  de: ["anna","bernd","claudia","dieter","elke","frank","gabi","hans","ingrid","juergen","karen","lukas","michael","nora","oliver","petra","ralf","sabine","thomas","ulrike","volker","walter","xaver","yvonne","zoe"],
-  es: ["alejandro","beatriz","carlos","diana","elena","francisco","gabriela","hector","ines","jorge","karla","luis","miguel","natalia","oscar","patricia","rafael","sofia","tomas","ursula","victor","wendy","xavier","yolanda","zara"],
-  it: ["alessio","beatrice","chiara","davide","elena","fabio","giovanni","ilaria","luca","marco","nicoletta","ottavia","paolo","roberta","simone","tiziana","umberto","valentina","william","xenia","yuri","zoe","andrea","benedetta"],
-  uk: ["alice","ben","charlie","diana","emily","frank","grace","henry","isabella","james","kate","liam","mia","noah","olivia","peter","quinn","rose","sam","tara","uma","victor","wendy","xander","yasmin","zoe"]
-};
-
-const NOMS = {
-  fr: ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin","masson"],
-  be: ["janssen","peeters","maes","jacobs","willems","claes","goossens","wouters","martens","smeets","dupont","simon","lambert","renard","leroy","piron","denis","thomas","adam","collignon"],
-  ch: ["mueller","meier","schmid","keller","weber","huber","schneider","zimmermann","steiner","moser","dubois","girard","favre","blanc","bonvin","roux","dupont","morel","jacot","perroux"],
-  ca: ["tremblay","gagnon","roy","cote","bouchard","gauthier","morin","lavoie","fortin","ouellet","pelletier","belanger","lepage","lefebvre","bergeron","girard","thibault","leblanc","paquin","simard"],
-  ma: ["alami","bennani","berrada","chraibi","daoudi","elhajj","fassi","ghali","hamdouch","idrissi","jaddi","kadiri","laraqi","mansouri","naji","ouali","rahmouni","skalli","tazi","zniber"],
-  sn: ["diop","fall","ndiaye","ba","mbaye","sow","sy","diagne","cisse","gueye","diouf","sarr","thiam","faye","ly","wade","gaye","diallo","ndour","toure"],
-  tn: ["ben ali","trabelsi","belhaj","chaabane","jlassi","khlifi","mansouri","nasri","ouali","rahmani","saidi","tlili","zghal","zouari","abidi","belhadj","cherni","dridi","ferchichi","hamdi"],
-  de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann"],
-  es: ["garcia","martinez","lopez","sanchez","gonzalez","perez","rodriguez","fernandez","moreno","jimenez","ruiz","hernandez","diaz","alvarez","romero","torres","navarro","dominguez","ramos","gil"],
-  it: ["rossi","russo","ferrari","esposito","bianchi","romano","colombo","ricci","marino","greco","bruno","gallo","conti","de luca","mancini","costa","giordano","rizzo","lombardi","barbieri"],
-  uk: ["smith","jones","williams","taylor","brown","davies","evans","wilson","thomas","roberts","johnson","white","martin","thompson","garcia","martinez","robinson","clark","rodriguez","lewis"]
-};
-
-const SECTEURS_DATA = {
-  all:       { label: "Général",           color: "#6366f1", bg: "#eef2ff" },
-  btp:       { label: "BTP",               color: "#d97706", bg: "#fffbeb" },
-  genie:     { label: "Génie Civil",       color: "#92400e", bg: "#fef3c7" },
-  immo:      { label: "Immobilier",        color: "#059669", bg: "#ecfdf5" },
-  auto:      { label: "Automobile",        color: "#dc2626", bg: "#fef2f2" },
-  sante:     { label: "Santé",             color: "#0891b2", bg: "#ecfeff" },
-  finance:   { label: "Finance",           color: "#2563eb", bg: "#eff6ff" },
-  tech:      { label: "Tech / IT",         color: "#7c3aed", bg: "#f5f3ff" },
-  industrie: { label: "Industrie",         color: "#64748b", bg: "#f8fafc" },
-  transport: { label: "Transport",         color: "#ea580c", bg: "#fff7ed" },
-  commerce:  { label: "Commerce",          color: "#db2777", bg: "#fdf2f8" },
-  juridique: { label: "Juridique",         color: "#475569", bg: "#f8fafc" },
-  education: { label: "Éducation",         color: "#16a34a", bg: "#f0fdf4" }
-};
-
-const B2B_PREFIXES = {
-  all:       ["global","inter","apex","core","alliance","prime","alpha"],
-  btp:       ["bat","construct","build","artisan","structur","renov"],
-  genie:     ["geo","civil","infra","terras","route","ponts"],
-  immo:      ["agence","cabinet","foncier","patrimoine","residence","immo"],
-  auto:      ["garage","motor","car","auto","meca","drive"],
-  sante:     ["medical","clinique","pharma","soins","sante","labo"],
-  finance:   ["finance","invest","courtage","assurance","fidu","capital"],
-  tech:      ["tech","soft","digital","cloud","app","data","net","cyber"],
-  industrie: ["indus","fab","manufactur","metal","prod","atelier"],
-  transport: ["logistik","trans","fret","delivery","fret","express"],
-  commerce:  ["retail","shop","negoce","import","export","grossiste"],
-  juridique: ["avocat","notaire","juridix","lex","barreau","conseils"],
-  education: ["edu","ecole","academy","formation","learn","e-stud"]
-};
-
-const B2B_SUFFIXES = ["groupe","solutions","services","expert","holding","international","plus","pro","systemes","partners"];
-
-// ══════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════
-let allEmails = [];
-let generated = new Set();
-let scanInterval = null;
-let scanCount = 0;
-let scanTarget = 0;
-let rateCountMin = 0;
-let rateInterval = null;
-
-// ══════════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════════
-function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function now() {
-  const d = new Date();
-  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-}
-
-function toggleCustom() {
-  document.getElementById('customField').style.display =
-    document.getElementById('targetCount').value === 'custom' ? 'block' : 'none';
-}
-
-function updateVilles() {
-  const pays = document.getElementById('pays').value;
-  const villes = VILLES[pays] || ["Toutes villes"];
-  const sel = document.getElementById('ville');
-  sel.innerHTML = '';
-  villes.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v === 'Toutes villes' ? 'all' : v;
-    opt.textContent = v;
-    sel.appendChild(opt);
-  });
-}
-
-// ══════════════════════════════════════════════════════
-// COOLDOWN STABLE DE 300 MAILS
-// ══════════════════════════════════════════════════════
-const COOLDOWN = 300;
-
-const cooldownPrenom = [];
-const cooldownNom    = [];
-const cooldownSuffix = [];
-const cooldownEntreprise = [];
-
-function slugify(str) {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/gi,'').toLowerCase();
-}
-
-function sep() { return rand(['.','-','_','']); }
-
-function pickWithCooldown(pool, cooldownQueue) {
-  const available = pool.filter(item => !cooldownQueue.includes(item));
-  const chosen = available.length > 0 ? rand(available) : cooldownQueue[0];
-  
-  cooldownQueue.push(chosen);
-  if (cooldownQueue.length > COOLDOWN) cooldownQueue.shift();
-  return chosen;
-}
-
-const SUFFIX_CATEGORIES = [
-  { key: 'none',   weight: 35, gen: () => '' },
-  { key: '2digit', weight: 20, gen: () => String(randInt(10, 99)) },
-  { key: '3digit', weight: 15, gen: () => String(randInt(100, 999)) },
-  { key: 'year',   weight: 15, gen: () => String(randInt(1970, 2008)) },
-  { key: 'word',   weight: 15, gen: () => rand(['pro','perso','contact','work','mail','office','direct']) }
-];
-
-function buildSuffix() {
-  const available = SUFFIX_CATEGORIES.filter(c => !cooldownSuffix.includes(c.key));
-  const pool = available.length > 0 ? available : SUFFIX_CATEGORIES;
-  
-  const totalWeight = pool.reduce((s, c) => s + c.weight, 0);
-  let r = Math.random() * totalWeight;
-  let chosen = pool[pool.length - 1];
-  for (const cat of pool) { r -= cat.weight; if (r <= 0) { chosen = cat; break; } }
-  
-  cooldownSuffix.push(chosen.key);
-  if (cooldownSuffix.length > 15) cooldownSuffix.shift(); 
-  return chosen.gen();
-}
-
-function buildLocal(p, n) {
-  const ps = slugify(p);
-  const ns = slugify(n);
-  const pi = ps[0];
-  const ni = ns[0];
-
-  const formats = [
-    () => `${ps}.${ns}`,
-    () => `${ps}${ns}`,
-    () => `${pi}.${ns}`,
-    () => `${pi}${ns}`,
-    () => `${ns}.${ps}`,
-    () => `${ns}${ps}`,
-    () => `${ps}_${ns}`,
-    () => `${ns}_${ps}`,
-    () => `${ps}-${ns}`,
-    () => `${ps}.${ni}`,
-    () => `${ps}${sep()}${ns}`,
-    () => `${pi}${sep()}${ns}`,
-  ];
-
-  return rand(formats)();
-}
-
-function generateUniqueCompany(secteur, ville, extPays) {
-  const prefixes = B2B_PREFIXES[secteur] || B2B_PREFIXES.all;
-  const suffix = rand(B2B_SUFFIXES);
-  
-  let companyName = "";
-  let attempt = 0;
-  
-  while (attempt < 50) {
-    const pref = rand(prefixes);
-    const useVille = (ville && ville !== 'all' && Math.random() < 0.40);
-    const geo = useVille ? '-' + slugify(ville) : '';
-    
-    companyName = `${pref}-${suffix}${geo}`;
-    if (!cooldownEntreprise.includes(companyName)) {
-      break;
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- JAVASCRIPT CORRIGÉ ET ENVELOPPÉ DANS LA BALISE SCRIPT -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <script>
+    // AUTH
+    function doLogin() {
+      const u = document.getElementById('loginUser').value.trim();
+      const p = document.getElementById('loginPass').value;
+      const err = document.getElementById('loginError');
+      if (u === 'Kazama1134' && p === 'Trillions2605') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
+        updateVilles();
+        err.style.display = 'none';
+      } else {
+        err.style.display = 'block';
+        document.getElementById('loginPass').value = '';
+      }
     }
-    attempt++;
-  }
-  
-  cooldownEntreprise.push(companyName);
-  if (cooldownEntreprise.length > COOLDOWN) cooldownEntreprise.shift();
-  
-  return `${companyName}${extPays}`;
-}
-
-function resetCooldowns() {
-  cooldownPrenom.length = 0;
-  cooldownNom.length = 0;
-  cooldownSuffix.length = 0;
-  cooldownEntreprise.length = 0;
-}
-
-function buildEmail(pays, secteur, ville) {
-  const prenomsList = PRENOMS[pays] || PRENOMS.fr;
-  const nomsList    = NOMS[pays]    || NOMS.fr;
-  const locaux      = DOMAINES_LOCAUX[pays] || [];
-  const extPays     = EXT_PAYS[pays] || '.fr';
-
-  const p = pickWithCooldown(prenomsList, cooldownPrenom);
-  const n = pickWithCooldown(nomsList,    cooldownNom);
-  let local = buildLocal(p, n) + buildSuffix();
-
-  local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
-  if (!local) local = slugify(p) + slugify(n);
-
-  // ~35% de mails pro uniques
-  if (Math.random() < 0.35) {
-    const targetSecteur = secteur === 'all' ? rand(Object.keys(B2B_PREFIXES)) : secteur;
-    const companyDomain = generateUniqueCompany(targetSecteur, ville, extPays);
-    return `${rand(['contact','info','direction','commercial',local])}@${companyDomain}`;
-  }
-
-  const useLocal = locaux.length > 0 && Math.random() < 0.54;
-  if (useLocal) {
-    return `${local}@${rand(locaux)}${extPays}`;
-  } else {
-    const g = rand(DOMAINES_GLOBAUX);
-    return `${local}@${g.d}${g.ext}`;
-  }
-}
-
-// ══════════════════════════════════════════════════════
-// CADENCE 1000 MAILS / 30 MIN (1.8s)
-// ══════════════════════════════════════════════════════
-function startScan() {
-  if (scanInterval) return;
-
-  const pays    = document.getElementById('pays').value;
-  const secteur = document.getElementById('secteur').value;
-  const ville   = document.getElementById('ville').value;
-  const sel     = document.getElementById('targetCount').value;
-  scanTarget    = sel === 'custom' ? (parseInt(document.getElementById('customCount').value) || 500) : parseInt(sel);
-
-  scanCount = 0;
-  resetCooldowns();
-
-  const dot   = document.getElementById('scanDot');
-  const label = document.getElementById('scanLabel');
-  const tgt   = document.getElementById('scanTarget');
-  const bar   = document.getElementById('progressBar');
-
-  dot.classList.add('active');
-  label.textContent = 'Scan en cours...';
-  const paysName = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text;
-  const secteurName = document.getElementById('secteur').options[document.getElementById('secteur').selectedIndex].text;
-  tgt.textContent = `${secteurName} · ${paysName} · cible : ${scanTarget.toLocaleString('fr')}`;
-  bar.classList.add('animated');
-  bar.style.width = '0%';
-
-  rateInterval = setInterval(() => {
-    document.getElementById('statRate').textContent = (rateCountMin * 6).toLocaleString('fr'); 
-    rateCountMin = 0;
-  }, 10000);
-
-  const tbody = document.getElementById('tbody');
-
-  scanInterval = setInterval(() => {
-    if (scanCount >= scanTarget) { stopScan(); return; }
-
-    let email = null;
-    let tries = 0;
-    while (!email && tries < 40) {
-      tries++;
-      const candidate = buildEmail(pays, secteur, ville);
-      if (!generated.has(candidate)) { email = candidate; }
+    function doLogout() {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appScreen').style.display = 'none';
+      document.getElementById('loginUser').value = '';
+      document.getElementById('loginPass').value = '';
+      clearAll();
     }
-    if (!email) return;
 
-    generated.add(email);
-    allEmails.push({ email, secteur, pays, ville: ville === 'all' ? '—' : ville, time: now() });
-    scanCount++;
-    rateCountMin++;
+    // DATA (Côte d'Ivoire entièrement retirée)
+    const VILLES = {
+      fr: ["Toutes villes","Paris","Lyon","Marseille","Toulouse","Bordeaux","Nantes","Lille","Strasbourg","Rennes","Montpellier","Nice","Grenoble","Toulon","Dijon","Angers","Reims","Rouen","Saint-Étienne","Douarnenez","Brest","Quimper","Rennes","Caen","Clermont-Ferrand","Orléans","Metz","Besançon","Nancy","Tours"],
+      be: ["Toutes villes","Bruxelles","Liège","Gand","Anvers","Charleroi","Mons","Namur","Bruges","Louvain"],
+      ch: ["Toutes villes","Zurich","Genève","Berne","Bâle","Lausanne","Lugano","Winterthour","St-Gall"],
+      ca: ["Toutes villes","Montréal","Toronto","Vancouver","Québec","Ottawa","Calgary","Edmonton","Winnipeg"],
+      ma: ["Toutes villes","Casablanca","Rabat","Marrakech","Fès","Tanger","Agadir","Meknès","Oujda"],
+      sn: ["Toutes villes","Dakar","Thiès","Kaolack","Ziguinchor","Saint-Louis","Rufisque","Diourbel"],
+      tn: ["Toutes villes","Tunis","Sfax","Sousse","Kairouan","Bizerte","Gabès","Ariana","Gafsa"],
+      de: ["Toutes villes","Berlin","Munich","Hambourg","Cologne","Francfort","Stuttgart","Düsseldorf","Leipzig"],
+      es: ["Toutes villes","Madrid","Barcelone","Valence","Séville","Saragosse","Málaga","Bilbao","Murcie"],
+      it: ["Toutes villes","Rome","Milan","Naples","Turin","Palerme","Gênes","Bologne","Florence"],
+      uk: ["Toutes villes","Londres","Birmingham","Manchester","Leeds","Glasgow","Liverpool","Bristol","Sheffield"]
+    };
 
-    const sData = SECTEURS_DATA[secteur] || SECTEURS_DATA.all;
-    const paysFlag = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text.split(' ')[0];
+    const DOMAINES_LOCAUX = {
+      fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf"],
+      be:  ["skynet","telenet","proximus"],
+      ch:  ["bluewin","swissmail"],
+      ca:  ["videotron","bell","rogers"],
+      ma:  ["menara","iam"],
+      sn:  ["orange","expresso"],
+      tn:  ["topnet","gnet","hexabyte"],
+      de:  ["gmx","web","t-online","freenet"],
+      es:  ["telefonica","terra"],
+      it:  ["libero","virgilio","tiscali"],
+      uk:  ["btinternet","sky","virgin"]
+    };
 
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="color:var(--gray-400);font-size:0.7rem;font-family:'JetBrains Mono',monospace">${allEmails.length}</td>
-      <td class="td-email">${email}</td>
-      <td><span class="badge-secteur" style="color:${sData.color};background:${sData.bg}">${sData.label}</span></td>
-      <td class="td-pays">${paysFlag}</td>
-      <td class="td-ville">${ville === 'all' ? '—' : ville}</td>
-      <td class="td-time">${now()}</td>
-    `;
-    tbody.insertBefore(tr, tbody.firstChild);
+    const DOMAINES_GLOBAUX = [
+      { d:"gmail",     ext:".com" },
+      { d:"yahoo",     ext:".com" },
+      { d:"hotmail",   ext:".com" },
+      { d:"outlook",   ext:".com" },
+      { d:"live",      ext:".com" },
+      { d:"proton",    ext:".me"  },
+      { d:"icloud",    ext:".com" },
+      { d:"pm",        ext:".me"  },
+    ];
 
-    while (tbody.children.length > 300) tbody.removeChild(tbody.lastChild);
+    const EXT_PAYS = {
+      fr:".fr", be:".be", ch:".ch", ca:".ca", ma:".ma", sn:".sn", tn:".tn", de:".de", es:".es", it:".it", uk:".co.uk"
+    };
 
-    document.getElementById('statTotal').textContent = allEmails.length.toLocaleString('fr');
-    document.getElementById('statUniq').textContent  = generated.size.toLocaleString('fr');
-    document.getElementById('resultsCount').textContent = `${allEmails.length.toLocaleString('fr')} email(s)`;
+    const PRENOMS = {
+      fr: ["abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdoullah","abel","achille","adam","adeline","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adelaide","agathe","aglae","agnes","ahmad","ahmed","aimery","aime","aimee","alain","alan","alban","albert","albertine","alberto","albin","albine","albino","alberic","aldo","alec","alessandra","alessandro","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aline","alison","alistair","allan","allen","alphonse","amanda","amandine","amar","amaury","ambroise","amel","amina","amelie","anais","andrea","andreas","andrew","andre","andree","ange","angel","angelina","angelo","angie","angele","angelique","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anthony","antoine","antoinette","antoni","antonio","antony","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arthur","arturo","astrid","aude","audebert","audrey","augusta","auguste","augustin","augusto","aurore","aurelia","aureliane","aurelie","aurelien","axel","axelle","aymar","aymeric","aicha","bahia","baptiste","barbara","bart","barthelemy","basile","bastien","baudoin","benaicha","benjamin","benjamine","benoit","bernadette","bernard","bernhard","bertrand","betty","bianca","bill","bjorn","blaise","blanche","blandine","boris","brahim","brian","brice","brigitte","bruce","bruno","beatrice","benedicte","berangere","berengere","cameron","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","catherine","cathie","cathy","cendrine","cerise","chantal","charles","charlie","charline","charlotte","charly","charlene","chiara","chloe","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christele","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotilde","clemence","clement","colette","colin","concepcion","constance","constant","constantin","coralie","corine","corinne","cynthia","cyprien","cyril","cyrille","cecil","cecile","cecilia","cedric","celia","celine","cesar","daisy","dalida","damien","dan","daniel","daniela","danielle","daniele","daphne","dario","darlene","darren","david","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonne","dimitri","diogo","djamel","djamila","dolores","domingos","dominique","donald","dorothy","dorothee","douglas","dounia","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","elena","eliane","elisabeth","elizabeth","eloise","elsa","elvire","eleonore","emily","emma","emmanuel","emmanuelle","enrico","enzo","eric","erick","erik","erika","ernest","ernst","erwan","erwann","erwin","estelle","esther","etiennette","eudes","eugenio","eugene","eugenie","evangeline","eve","eveline","evelyn","evelyne","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fanny","farid","faridah","fatiha","fatima","fatma","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","flavie","flavien","flavio","fleur","florence","florent","florian","floriane","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","francois","francoise","freddy","frederick","frederico","frederik","friedrich","fritz","frederic","frederique","felix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gary","gaspard","gaston","gael","gaelle","gaetan","genevieve","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","ghislain","ghislaine","gianfranco","gianni","gil","gilbert","gilberte","gildas","gilles","ginette","gino","giorgio","giovanni","giselle","gislain","gisele","giuseppe","gladys","gontrand","gonzague","gordon","gottfried","graham","grace","gregoire","gregor","gregory","guido","guillaume","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenael","gwenaelle","gwendoline","gerald","geraldine","gerard","geraud","habib","hans","harold","hassan","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermann","herve","honore","houria","hubert","hugues","huguette","helene","helena","ian","igor","ingrid","ines","irma","irene","isaac","isabel","isabelle","isidore","issam","ivan","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jamel","james","jamila","jan","jane","janine","jannick","jason","jean","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","jimmy","joachim","joanna","joao","joaquim","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jonas","jonathan","jorg","jorge","jorgen","joselaine","joseph","josephus","josette","josiane","jose","josee","josephine","jozef","joel","joelle","juan","judith","jules","julia","juliana","julie","julien","juliette","jurgen","justine","jeremie","jerome","jesus","kadyja","kamel","karen","karim","karima","karin","karina","karine","karl","katerine","kathleen","katia","katy","keith","kelly","kenneth","kenny","kevin","khaled","klaus","kristel","kurt","laetitia","lamia","lana","lars","laura","laure","laureline","laurence","laurent","lauretta","lauriane","laurie","lawrence","leila","lelia","leonardo","leslie","lia","lila","lilian","liliane","lina","linda","line","linette","lionel","lisa","lise","lorenzo","loriane","lorianne","lorraine","louis","louisa","louise","louisette","loic","luc","luca","lucas","lucette","lucia","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludovic","luigi","luis","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","lea","leo","leon","leonard","leone","leonie","leopold","macha","madeleine","madeline","madiha","magali","magalie","magaly","magdeleine","maggy","magnus","malcolm","malik","malika","manfred","manon","manuel","manuela","marc","marcel","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariana","marianna","marianne","marie","marielle","marieva","marilyn","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlene","marta","marthe","martial","martin","martine","martino","mary","marylaine","maryline","marylise","marylou","marylene","maryse","maryvonne","massimiliano","massimo","mathias","mathieu","mathilde","matthew","matthias","matthieu","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maya","maeva","maite","melinda","mercedes","messaoud","messaouda","michael","michel","micheline","michelle","michele","mickael","miguel","mikael","miloud","mireille","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mounia","mounir","mourad","moise","muguette","muriel","murielle","mustapha","mylene","myriam","myrna","melanie","melodie","nadia","nadine","nadege","nancy","nasser","natacha","natanael","nathalie","nathan","nathanael","nathaniel","neil","nelly","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","nina","nino","nissim","nolwenn","nora","norbert","nourdine","noemie","noel","noelle","octave","oceane","odette","odile","olga","oliver","olivia","olivier","olympia","omar","oriane","oscar","oswald","otto","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","pauline","paulo","pedro","peggy","perrine","peter","petrus","philip","philippe","philomene","pierre","pierrette","pierric","pierrick","pietro","prisca","quentin","rachel","rachid","rafael","raffael","raimondo","ralf","ralph","ramon","raoul","raphael","raphaelle","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","rene","renee","reynald","reza","riccardo","richard","rita","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigues","roger","roland","rolande","rolf","rolland","romain","romano","romuald","romeo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","rudi","rudolf","rudolph","rudy","regine","regis","remi","remy","renata","sabine","sabrina","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sandie","sandra","sandrine","sara","sarah","said","sebastian","serge","sergio","servane","shirley","simon","simone","slimane","soazig","sofia","solange","solene","sonia","sonya","sophia","sophie","soraya","souad","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stephan","stephane","stephanie","susan","suzanne","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sebastien","severine","tanguy","tania","tatiana","theodor","thibaud","thibault","thibaut","thierry","thomas","theodore","theophile","therese","tiffany","timothy","tito","tobias","tom","tommy","tony","tristan","ugo","ulrich","ulysse","umberto","valentine","valerie","valery","vanessa","vanina","vicente","victoire","victor","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vladimir","veronique","walter","warren","werner","wilfrid","wilfried","willem","william","willy","wladimir","wolfgang","xavier","yann","yannick","yasmina","yasmine","yael","yohan","yohann","yolande","yolene","youssef","yvan","yveline","yves","yvette","yvon","yvonne","zoubida","edith","eglantine","elie","elisa","elise","eliza","elodie","emeline","emile","emilia","emilie","etienne","eva","adele","albane","aliette","alix","alizee","ambre","amedee","angeline","antonin","arsene","aubin","auriane","barnabe","baudouin","berenice","bertin","benoite","chimene","clementine","corentin","donatien","dorian","doriane","eloi","emilien","evariste","flore","florentine","florine","garence","gautier","godefroy","heloise","hortense","jasmine","joanne","jocelyn","julienne","justin","lambert","laurette","leopoldine","marcelin","marin","mathis","maximilienne","megane","milene","ophelie","paulin","philippine","rejane","rodrigue","romane","segolene","sibylle","timothee","tiphaine","ursule","valentin","vivien","zacharie","zoe"],
+      be: ["axel","brice","celine","dominique","emile","francoise","gerard","hilde","isabelle","jan","koen","lien","marc","nathalie","olivier","patricia","quentin","roos","stefan","tine","ulrike","veerle","wout","xavier","yves","zoe"],
+      ch: ["alex","beat","carmen","daniel","eva","felix","gabi","hans","irene","jakob","kurt","lena","marco","nina","otto","petra","rolf","sarah","thomas","ursula","victor","walter","xenia","yves","zara"],
+      ca: ["alex","brigitte","charles","diane","etienne","francine","gabriel","helene","ivan","josee","kevin","lucie","marc","nadine","olivier","pascale","quentin","rachel","simon","therese","ulric","valerie","william","xavier","yvonne","zacharie"],
+      ma: ["amine","bilal","chaimae","driss","fatima","hamza","imane","jalil","kenza","leila","mehdi","nadia","omar","rachid","samir","tariq","widad","youssef","zineb","abdelali","bouchra","charaf","dounia"],
+      sn: ["aissatou","boubacar","cheikh","dieynaba","elhadj","fatoumata","gorgui","hadja","ibrahima","jainaba","khady","lamine","mamadou","ndieye","oumar","pape","rokhaya","serigne","thierno","umu"],
+      tn: ["ahmed","bilel","chaima","dhia","emna","farouk","ghada","hamdi","imen","jamel","khaled","leila","mehdi","nesrine","omar","rahma","sami","tarek","wafa","youssef","zied"],
+      de: ["anna","bernd","claudia","dieter","elke","frank","gabi","hans","ingrid","juergen","karen","lukas","michael","nora","oliver","petra","ralf","sabine","thomas","ulrike","volker","walter","xaver","yvonne","zoe"],
+      es: ["alejandro","beatriz","carlos","diana","elena","francisco","gabriela","hector","ines","jorge","karla","luis","miguel","natalia","oscar","patricia","rafael","sofia","tomas","ursula","victor","wendy","xavier","yolanda","zara"],
+      it: ["alessio","beatrice","chiara","davide","elena","fabio","giovanni","ilaria","luca","marco","nicoletta","ottavia","paolo","roberta","simone","tiziana","umberto","valentina","william","xenia","yuri","zoe","andrea","benedetta"],
+      uk: ["alice","ben","charlie","diana","emily","frank","grace","henry","isabella","james","kate","liam","mia","noah","olivia","peter","quinn","rose","sam","tara","uma","victor","wendy","xander","yasmin","zoe"]
+    };
 
-    const pct = Math.min(100, Math.round((scanCount / scanTarget) * 100));
-    bar.classList.remove('animated');
-    bar.style.width = pct + '%';
+    const NOMS = {
+      fr: ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin","masson"],
+      be: ["janssen","peeters","maes","jacobs","willems","claes","goossens","wouters","martens","smeets","dupont","simon","lambert","renard","leroy","piron","denis","thomas","adam","collignon"],
+      ch: ["mueller","meier","schmid","keller","weber","huber","schneider","zimmermann","steiner","moser","dubois","girard","favre","blanc","bonvin","roux","dupont","morel","jacot","perroux"],
+      ca: ["tremblay","gagnon","roy","cote","bouchard","gauthier","morin","lavoie","fortin","ouellet","pelletier","belanger","lepage","lefebvre","bergeron","girard","thibault","leblanc","paquin","simard"],
+      ma: ["alami","bennani","berrada","chraibi","daoudi","elhajj","fassi","ghali","hamdouch","idrissi","jaddi","kadiri","laraqi","mansouri","naji","ouali","rahmouni","skalli","tazi","zniber"],
+      sn: ["diop","fall","ndiaye","ba","mbaye","sow","sy","diagne","cisse","gueye","diouf","sarr","thiam","faye","ly","wade","gaye","diallo","ndour","toure"],
+      tn: ["ben ali","trabelsi","belhaj","chaabane","jlassi","khlifi","mansouri","nasri","ouali","rahmani","saidi","tlili","zghal","zouari","abidi","belhadj","cherni","dridi","ferchichi","hamdi"],
+      de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann"],
+      es: ["garcia","martinez","lopez","sanchez","gonzalez","perez","rodriguez","fernandez","moreno","jimenez","ruiz","hernandez","diaz","alvarez","romero","torres","navarro","dominguez","ramos","gil"],
+      it: ["rossi","russo","ferrari","esposito","bianchi","romano","colombo","ricci","marino","greco","bruno","gallo","conti","de luca","mancini","costa","giordano","rizzo","lombardi","barbieri"],
+      uk: ["smith","jones","williams","taylor","brown","davies","evans","wilson","thomas","roberts","johnson","white","martin","thompson","garcia","martinez","robinson","clark","rodriguez","lewis"]
+    };
 
-  }, 1800);
-}
+    const SECTEURS_DATA = {
+      all:       { label: "Général",           color: "#6366f1", bg: "#eef2ff" },
+      btp:       { label: "BTP",               color: "#d97706", bg: "#fffbeb" },
+      genie:     { label: "Génie Civil",       color: "#92400e", bg: "#fef3c7" },
+      immo:      { label: "Immobilier",        color: "#059669", bg: "#ecfdf5" },
+      auto:      { label: "Automobile",        color: "#dc2626", bg: "#fef2f2" },
+      sante:     { label: "Santé",             color: "#0891b2", bg: "#ecfeff" },
+      finance:   { label: "Finance",           color: "#2563eb", bg: "#eff6ff" },
+      tech:      { label: "Tech / IT",         color: "#7c3aed", bg: "#f5f3ff" },
+      industrie: { label: "Industrie",         color: "#64748b", bg: "#f8fafc" },
+      transport: { label: "Transport",         color: "#ea580c", bg: "#fff7ed" },
+      commerce:  { label: "Commerce",          color: "#db2777", bg: "#fdf2f8" },
+      juridique: { label: "Juridique",         color: "#475569", bg: "#f8fafc" },
+      education: { label: "Éducation",         color: "#16a34a", bg: "#f0fdf4" }
+    };
 
-function stopScan() {
-  clearInterval(scanInterval);
-  clearInterval(rateInterval);
-  scanInterval = null;
-  rateInterval = null;
-  rateCountMin = 0;
+    const B2B_PREFIXES = {
+      all:       ["global","inter","apex","core","alliance","prime","alpha"],
+      btp:       ["bat","construct","build","artisan","structur","renov"],
+      genie:     ["geo","civil","infra","terras","route","ponts"],
+      immo:      ["agence","cabinet","foncier","patrimoine","residence","immo"],
+      auto:      ["garage","motor","car","auto","meca","drive"],
+      sante:     ["medical","clinique","pharma","soins","sante","labo"],
+      finance:   ["finance","invest","courtage","assurance","fidu","capital"],
+      tech:      ["tech","soft","digital","cloud","app","data","net","cyber"],
+      industrie: ["indus","fab","manufactur","metal","prod","atelier"],
+      transport: ["logistik","trans","fret","delivery","fret","express"],
+      commerce:  ["retail","shop","negoce","import","export","grossiste"],
+      juridique: ["avocat","notaire","juridix","lex","barreau","conseils"],
+      education: ["edu","ecole","academy","formation","learn","e-stud"]
+    };
 
-  document.getElementById('scanDot').classList.remove('active');
-  document.getElementById('scanLabel').textContent = scanCount >= scanTarget ? 'Scan terminé' : 'Arrêté';
-  document.getElementById('progressBar').classList.remove('animated');
-  if (scanCount >= scanTarget) document.getElementById('progressBar').style.width = '100%';
-}
+    const B2B_SUFFIXES = ["groupe","solutions","services","expert","holding","international","plus","pro","systemes","partners"];
 
-function clearAll() {
-  stopScan();
-  resetCooldowns();
-  allEmails = [];
-  generated = new Set();
-  scanCount = 0;
-  document.getElementById('tbody').innerHTML = '';
-  ['statTotal','statUniq','statRate'].forEach(id => document.getElementById(id).textContent = '0');
-  document.getElementById('resultsCount').textContent = '0 email(s)';
-  document.getElementById('progressBar').style.width = '0%';
-  document.getElementById('scanLabel').textContent = 'En attente';
-  document.getElementById('scanTarget').textContent = '—';
-}
+    // STATE
+    let allEmails = [];
+    let generated = new Set();
+    let scanInterval = null;
+    let scanCount = 0;
+    let scanTarget = 0;
+    let rateCountMin = 0;
+    let rateInterval = null;
 
-function copyAll() {
-  if (!allEmails.length) return;
-  navigator.clipboard.writeText(allEmails.map(r => r.email).join('\n'))
-    .then(() => alert(`✅ ${allEmails.length.toLocaleString('fr')} emails copiés !`));
-}
+    // UTILS
+    function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function now() {
+      const d = new Date();
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+    }
 
-function downloadCSV() {
-  if (!allEmails.length) return;
-  const header = 'email,secteur,pays,ville,heure_detection\n';
-  const rows   = allEmails.map(r => `${r.email},${SECTEURS_DATA[r.secteur]?.label||r.secteur},${r.pays},${r.ville},${r.time}`).join('\n');
-  dl(new Blob([header + rows], { type: 'text/csv;charset=utf-8' }), 'email_finder_export.csv');
-}
+    function toggleCustom() {
+      document.getElementById('customField').style.display =
+        document.getElementById('targetCount').value === 'custom' ? 'block' : 'none';
+    }
 
-function downloadTxt() {
-  if (!allEmails.length) return;
-  dl(new Blob([allEmails.map(r => r.email).join('\n')], { type: 'text/plain' }), 'email_finder_export.txt');
-}
+    function updateVilles() {
+      const pays = document.getElementById('pays').value;
+      const villes = VILLES[pays] || ["Toutes villes"];
+      const sel = document.getElementById('ville');
+      sel.innerHTML = '';
+      villes.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v === 'Toutes villes' ? 'all' : v;
+        opt.textContent = v;
+        sel.appendChild(opt);
+      });
+    }
 
-function dl(blob, name) {
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
-}
+    // COOLDOWN STABLE DE 300 MAILS
+    const COOLDOWN = 300;
+
+    const cooldownPrenom = [];
+    const cooldownNom    = [];
+    const cooldownSuffix = [];
+    const cooldownEntreprise = [];
+
+    function slugify(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/gi,'').toLowerCase();
+    }
+
+    function sep() { return rand(['.','-','_','']); }
+
+    function pickWithCooldown(pool, cooldownQueue) {
+      const available = pool.filter(item => !cooldownQueue.includes(item));
+      const chosen = available.length > 0 ? rand(available) : cooldownQueue[0];
+      
+      cooldownQueue.push(chosen);
+      if (cooldownQueue.length > COOLDOWN) cooldownQueue.shift();
+      return chosen;
+    }
+
+    const SUFFIX_CATEGORIES = [
+      { key: 'none',   weight: 35, gen: () => '' },
+      { key: '2digit', weight: 20, gen: () => String(randInt(10, 99)) },
+      { key: '3digit', weight: 15, gen: () => String(randInt(100, 999)) },
+      { key: 'year',   weight: 15, gen: () => String(randInt(1970, 2008)) },
+      { key: 'word',   weight: 15, gen: () => rand(['pro','perso','contact','work','mail','office','direct']) }
+    ];
+
+    function buildSuffix() {
+      const available = SUFFIX_CATEGORIES.filter(c => !cooldownSuffix.includes(c.key));
+      const pool = available.length > 0 ? available : SUFFIX_CATEGORIES;
+      
+      const totalWeight = pool.reduce((s, c) => s + c.weight, 0);
+      let r = Math.random() * totalWeight;
+      let chosen = pool[pool.length - 1];
+      for (const cat of pool) { r -= cat.weight; if (r <= 0) { chosen = cat; break; } }
+      
+      cooldownSuffix.push(chosen.key);
+      if (cooldownSuffix.length > 15) cooldownSuffix.shift(); 
+      return chosen.gen();
+    }
+
+    function buildLocal(p, n) {
+      const ps = slugify(p);
+      const ns = slugify(n);
+      const pi = ps[0];
+      const ni = ns[0];
+
+      const formats = [
+        () => `${ps}.${ns}`,
+        () => `${ps}${ns}`,
+        () => `${pi}.${ns}`,
+        () => `${pi}${ns}`,
+        () => `${ns}.${ps}`,
+        () => `${ns}${ps}`,
+        () => `${ps}_${ns}`,
+        () => `${ns}_${ps}`,
+        () => `${ps}-${ns}`,
+        () => `${ps}.${ni}`,
+        () => `${ps}${sep()}${ns}`,
+        () => `${pi}${sep()}${ns}`,
+      ];
+
+      return rand(formats)();
+    }
+
+    function generateUniqueCompany(secteur, ville, extPays) {
+      const prefixes = B2B_PREFIXES[secteur] || B2B_PREFIXES.all;
+      const suffix = rand(B2B_SUFFIXES);
+      
+      let companyName = "";
+      let attempt = 0;
+      
+      while (attempt < 50) {
+        const pref = rand(prefixes);
+        const useVille = (ville && ville !== 'all' && Math.random() < 0.40);
+        const geo = useVille ? '-' + slugify(ville) : '';
+        
+        companyName = `${pref}-${suffix}${geo}`;
+        if (!cooldownEntreprise.includes(companyName)) {
+          break;
+        }
+        attempt++;
+      }
+      
+      cooldownEntreprise.push(companyName);
+      if (cooldownEntreprise.length > COOLDOWN) cooldownEntreprise.shift();
+      
+      return `${companyName}${extPays}`;
+    }
+
+    function resetCooldowns() {
+      cooldownPrenom.length = 0;
+      cooldownNom.length = 0;
+      cooldownSuffix.length = 0;
+      cooldownEntreprise.length = 0;
+    }
+
+    function buildEmail(pays, secteur, ville) {
+      const prenomsList = PRENOMS[pays] || PRENOMS.fr;
+      const nomsList    = NOMS[pays]    || NOMS.fr;
+      const locaux      = DOMAINES_LOCAUX[pays] || [];
+      const extPays     = EXT_PAYS[pays] || '.fr';
+
+      const p = pickWithCooldown(prenomsList, cooldownPrenom);
+      const n = pickWithCooldown(nomsList,    cooldownNom);
+      let local = buildLocal(p, n) + buildSuffix();
+
+      local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
+      if (!local) local = slugify(p) + slugify(n);
+
+      if (Math.random() < 0.35) {
+        const targetSecteur = secteur === 'all' ? rand(Object.keys(B2B_PREFIXES)) : secteur;
+        const companyDomain = generateUniqueCompany(targetSecteur, ville, extPays);
+        return `${rand(['contact','info','direction','commercial',local])}@${companyDomain}`;
+      }
+
+      const useLocal = locaux.length > 0 && Math.random() < 0.54;
+      if (useLocal) {
+        return `${local}@${rand(locaux)}${extPays}`;
+      } else {
+        const g = rand(DOMAINES_GLOBAUX);
+        return `${local}@${g.d}${g.ext}`;
+      }
+    }
+
+    // CADENCE 1000 MAILS / 30 MIN (1.8s)
+    function startScan() {
+      if (scanInterval) return;
+
+      const pays    = document.getElementById('pays').value;
+      const secteur = document.getElementById('secteur').value;
+      const ville   = document.getElementById('ville').value;
+      const sel     = document.getElementById('targetCount').value;
+      scanTarget    = sel === 'custom' ? (parseInt(document.getElementById('customCount').value) || 500) : parseInt(sel);
+
+      scanCount = 0;
+      resetCooldowns();
+
+      const dot   = document.getElementById('scanDot');
+      const label = document.getElementById('scanLabel');
+      const tgt   = document.getElementById('scanTarget');
+      const bar   = document.getElementById('progressBar');
+
+      dot.classList.add('active');
+      label.textContent = 'Scan en cours...';
+      const paysName = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text;
+      const secteurName = document.getElementById('secteur').options[document.getElementById('secteur').selectedIndex].text;
+      tgt.textContent = `${secteurName} · ${paysName} · cible : ${scanTarget.toLocaleString('fr')}`;
+      bar.classList.add('animated');
+      bar.style.width = '0%';
+
+      rateInterval = setInterval(() => {
+        document.getElementById('statRate').textContent = (rateCountMin * 6).toLocaleString('fr'); 
+        rateCountMin = 0;
+      }, 10000);
+
+      const tbody = document.getElementById('tbody');
+
+      scanInterval = setInterval(() => {
+        if (scanCount >= scanTarget) { stopScan(); return; }
+
+        let email = null;
+        let tries = 0;
+        while (!email && tries < 40) {
+          tries++;
+          const candidate = buildEmail(pays, secteur, ville);
+          if (!generated.has(candidate)) { email = candidate; }
+        }
+        if (!email) return;
+
+        generated.add(email);
+        allEmails.push({ email, secteur, pays, ville: ville === 'all' ? '—' : ville, time: now() });
+        scanCount++;
+        rateCountMin++;
+
+        const sData = SECTEURS_DATA[secteur] || SECTEURS_DATA.all;
+        const paysFlag = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text.split(' ')[0];
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color:var(--gray-400);font-size:0.7rem;font-family:'JetBrains Mono',monospace">${allEmails.length}</td>
+          <td class="td-email">${email}</td>
+          <td><span class="badge-secteur" style="color:${sData.color};background:${sData.bg}">${sData.label}</span></td>
+          <td class="td-pays">${paysFlag}</td>
+          <td class="td-ville">${ville === 'all' ? '—' : ville}</td>
+          <td class="td-time">${now()}</td>
+        `;
+        tbody.insertBefore(tr, tbody.firstChild);
+
+        while (tbody.children.length > 300) tbody.removeChild(tbody.lastChild);
+
+        document.getElementById('statTotal').textContent = allEmails.length.toLocaleString('fr');
+        document.getElementById('statUniq').textContent  = generated.size.toLocaleString('fr');
+        document.getElementById('resultsCount').textContent = `${allEmails.length.toLocaleString('fr')} email(s)`;
+
+        const pct = Math.min(100, Math.round((scanCount / scanTarget) * 100));
+        bar.classList.remove('animated');
+        bar.style.width = pct + '%';
+
+      }, 1800);
+    }
+
+    function stopScan() {
+      clearInterval(scanInterval);
+      clearInterval(rateInterval);
+      scanInterval = null;
+      rateInterval = null;
+      rateCountMin = 0;
+
+      document.getElementById('scanDot').classList.remove('active');
+      document.getElementById('scanLabel').textContent = scanCount >= scanTarget ? 'Scan terminé' : 'Arrêté';
+      document.getElementById('progressBar').classList.remove('animated');
+      if (scanCount >= scanTarget) document.getElementById('progressBar').style.width = '100%';
+    }
+
+    function clearAll() {
+      stopScan();
+      resetCooldowns();
+      allEmails = [];
+      generated = new Set();
+      scanCount = 0;
+      document.getElementById('tbody').innerHTML = '';
+      ['statTotal','statUniq','statRate'].forEach(id => document.getElementById(id).textContent = '0');
+      document.getElementById('resultsCount').textContent = '0 email(s)';
+      document.getElementById('progressBar').style.width = '0%';
+      document.getElementById('scanLabel').textContent = 'En attente';
+      document.getElementById('scanTarget').textContent = '—';
+    }
+    </script>
+</body>
+</html>
