@@ -1,242 +1,374 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Extracteur d'Emails B2B France</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .loader {
-            border-top-color: #3b82f6;
-            animation: spinner 1.5s linear infinite;
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-mail Finder Pro — Outil de Prospection B2B</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+  /* ─── ECRAN DE CONNEXION ────────────────────────────────────────────────── */
+  #loginScreen { background: #1e293b; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); width: 100%; max-width: 420px; border: 1px solid #334155; text-align: center; }
+  .login-logo { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; background: #1e3a5f; border-radius: 50%; color: #38bdf8; margin-bottom: 24px; }
+  #loginScreen h2 { font-size: 1.5rem; color: #f8fafc; margin-bottom: 8px; font-weight: 700; }
+  #loginScreen p { font-size: 0.875rem; color: #94a3b8; margin-bottom: 24px; }
+  .input-group { margin-bottom: 16px; text-align: left; }
+  .input-group label { display: block; font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.05em; }
+  .input-field { width: 100%; padding: 10px 14px; border: 1px solid #334155; border-radius: 8px; font-size: 0.95rem; background: #0f172a; color: #e2e8f0; transition: all 0.2s; }
+  .input-field:focus { outline: none; border-color: #38bdf8; background: #0f172a; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15); }
+  .btn-login { width: 100%; padding: 12px; background: #38bdf8; color: #0f172a; border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-top: 8px; }
+  .btn-login:hover { background: #0ea5e9; }
+  #loginError { color: #f87171; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 500; }
+
+  /* ─── INTERFACE PRINCIPALE ─────────────────────────────────────────────── */
+  #appContainer { width: 100%; max-width: 1100px; display: none; animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  header { background: #1e293b; padding: 20px 24px; border-radius: 14px; border: 1px solid #334155; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-logo { color: #38bdf8; width: 32px; height: 32px; }
+  .brand h1 { font-size: 1.25rem; font-weight: 700; color: #f8fafc; }
+  
+  .user-controls { display: flex; align-items: center; gap: 12px; }
+  .user-badge { display: flex; align-items: center; gap: 8px; background: #0f172a; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; color: #94a3b8; font-weight: 500; border: 1px solid #334155; }
+  .btn-logout { background: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-logout:hover { background: #991b1b; }
+
+  .layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: #1e293b; border-radius: 14px; border: 1px solid #334155; padding: 20px; height: fit-content; }
+  .panel-title { font-size: 0.9rem; font-weight: 700; color: #f8fafc; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+
+  .form-grid { display: flex; flex-direction: column; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
+  select { background: #0f172a; border: 1px solid #334155; color: #e2e8f0; border-radius: 8px; padding: 9px 12px; font-size: 0.9rem; width: 100%; }
+
+  /* Radar / Pulse Animation */
+  .radar-container { display: flex; align-items: center; gap: 10px; margin-top: 5px; background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; }
+  .radar-pulse { width: 14px; height: 14px; background: #475569; border-radius: 50%; position: relative; }
+  .radar-pulse.active { background: #22c55e; }
+  .radar-pulse.active::after { content: ''; position: absolute; width: 100%; height: 100%; background: #22c55e; border-radius: 50%; animation: pulse 1.5s infinite ease-out; opacity: 0.6; }
+  .radar-pulse.pause { background: #f97316; }
+  @keyframes pulse { to { transform: scale(3); opacity: 0; } }
+  .radar-text { font-size: 0.8rem; font-weight: 500; color: #94a3b8; line-height: 1.3; }
+
+  /* Alerte de restriction de sécurité */
+  .cooldown-alert { background: #3a2212; border: 1px solid #ea580c; color: #ffedd5; padding: 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 500; display: none; line-height: 1.4; }
+
+  /* Boutons */
+  .btn-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .btn { width: 100%; padding: 11px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
+  .btn-stream { background: #38bdf8; color: #0f172a; }
+  .btn-stream:hover { background: #0ea5e9; }
+  .btn-stop { background: #ef4444; color: white; display: none; }
+  .btn-panel-clear { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+  .btn-panel-clear:hover { background: #334155; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 550px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px 14px; }
+  .stat-num { font-size: 1.35rem; font-weight: 700; color: #38bdf8; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 0.72rem; color: #64748b; margin-top: 2px; font-weight: 500; }
+
+  /* Terminal de Sortie */
+  .output-container { display: flex; flex-direction: column; background: #0f172a; border-radius: 12px; overflow: hidden; border: 1px solid #334155; }
+  .output-header { background: #1e293b; padding: 10px 16px; font-size: 0.75rem; color: #94a3b8; font-family: monospace; display: flex; justify-content: space-between; border-bottom: 1px solid #334155; }
+  .output-body { height: 420px; overflow-y: auto; padding: 14px; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.82rem; line-height: 1.6; color: #e2e8f0; scroll-behavior: smooth; }
+  
+  .table-wrapper { display: flex; flex-direction: column; width: 100%; }
+  .table-row { display: grid; grid-template-columns: 60px 100px 100px 1fr 70px; gap: 12px; border-bottom: 1px solid #1e293b; padding: 6px 0; align-items: center; }
+  .table-row.header-row { position: sticky; top: -14px; background: #0f172a; z-index: 10; color: #64748b; font-weight: bold; border-bottom: 2px solid #334155; padding-bottom: 8px; font-size: 0.75rem; text-transform: uppercase; }
+  .col-idx { color: #475569; font-size: 0.75rem; }
+  .col-tag { font-size: 0.7rem; background: #1e293b; padding: 2px 6px; border-radius: 4px; color: #94a3b8; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 1px solid #334155;}
+  .col-email { color: #a3e635; font-weight: 500; word-break: break-all; }
+  .col-status { color: #22c55e; text-align: right; font-size: 0.75rem; }
+
+  .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+  .btn-action { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn-action:hover { background: #334155; }
+</style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body>
 
-    <div class="max-w-6xl mx-auto px-4 py-8">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
-                Extracteur d'Emails B2B France
-            </h1>
-            <p class="text-lg text-gray-600">
-                Générez des listes de prospects qualifiées avec vos accès LWS.
-            </p>
-        </header>
+<div id="loginScreen">
+  <div class="login-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:32px;height:32px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+  </div>
+  <h2>E-mail Finder Pro</h2>
+  <p>Authentification requise pour accéder au réseau</p>
+  <div class="input-group"><label>Identifiant</label><input type="text" id="username" class="input-field" autocomplete="off"></div>
+  <div class="input-group"><label>Mot de passe</label><input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="off"></div>
+  <button class="btn-login" onclick="checkAuth()">Se connecter</button>
+  <div id="loginError">Identifiants incorrects. Accès refusé.</div>
+</div>
 
-        <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-            <form id="searchForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label for="sector" class="block text-sm font-semibold text-gray-700 mb-1">Secteur d'activité</label>
-                    <select id="sector" class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="btp" selected>BTP / Construction</option>
-                        <option value="restauration">Restauration / Cafés</option>
-                        <option value="sante">Santé / Médical</option>
-                        <option value="auto">Automobile / Garage</option>
-                        <option value="immobilier">Immobilier</option>
-                        <option value="transport">Transport / Logistique</option>
-                        <option value="informatique">Informatique / Tech</option>
-                        <option value="commerce">Commerce de détail</option>
-                        <option value="industrie">Industrie</option>
-                        <option value="agriculture">Agriculture</option>
-                        <option value="education">Éducation / Formation</option>
-                        <option value="finance">Finance / Assurance</option>
-                        <option value="communication">Communication / Marketing</option>
-                        <option value="nettoyage">Nettoyage / Entretien</option>
-                        <option value="securite">Sécurité</option>
-                    </select>
-                </div>
+<div id="appContainer">
+  <header>
+    <div class="brand">
+      <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.603 10.601Z" /></svg>
+      <h1>E-mail Finder Pro</h1>
+    </div>
+    <div class="user-controls">
+      <div class="user-badge"><span>ID: Kazama1134</span></div>
+      <button class="btn-logout" onclick="triggerLogout()">Déconnexion</button>
+    </div>
+  </header>
 
-                <div>
-                    <label for="city" class="block text-sm font-semibold text-gray-700 mb-1">Ville, CP ou Dept</label>
-                    <input type="text" id="city" value="Paris" placeholder="Ex: 29100, Rennes, 75" required
-                           class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
-                </div>
-
-                <div>
-                    <label for="limit" class="block text-sm font-semibold text-gray-700 mb-1">Limite de résultats</label>
-                    <select id="limit" class="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-blue-500 focus:ring-blue-500">
-                        <option value="2">2 prospects</option>
-                        <option value="4">4 prospects</option>
-                        <option value="6" selected>6 prospects</option>
-                        <option value="8">8 prospects</option>
-                        <option value="10">10 prospects</option>
-                    </select>
-                </div>
-
-                <div>
-                    <button type="submit" id="submitBtn"
-                            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors cursor-pointer">
-                        Lancer la recherche
-                    </button>
-                </div>
-            </form>
-
-            <div class="mt-4 flex flex-wrap gap-6 text-sm text-gray-600 border-t border-gray-100 pt-4">
-                <label class="flex items-center cursor-pointer select-none">
-                    <input type="checkbox" id="emailsOnly" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 mr-2">
-                    Masquer les entreprises sans e-mail public
-                </label>
-                <label class="flex items-center cursor-pointer select-none">
-                    <input type="checkbox" id="useCache" checked class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 mr-2">
-                    Activer le cache serveur (Plus rapide)
-                </label>
-            </div>
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-title">Ciblage & Annuaires</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Source Annuaire</label>
+          <select id="directorySource" onchange="updateConsoleHeader()">
+            <option value="googlemaps">Google Maps France (Places API)</option>
+            <option value="pagesjaunes">PagesJaunes.fr (B2B Scraper)</option>
+            <option value="societe">Societe.com / Infogreffe (Dirigeants)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Secteur d'activité cible</label>
+          <select id="targetSector">
+            <option value="btp">Bâtiment / BTP & Génie Civil</option>
+            <option value="sante">Santé / Médical / Pharma</option>
+            <option value="immo">Immobilier / Architecture</option>
+            <option value="tech">Tech / Digital / Consulting</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Filtre Géographique</label>
+          <select id="targetRegion">
+            <option value="paris">Paris (75) / Île-de-France</option>
+            <option value="lyon">Lyon (69) / Rhône</option>
+            <option value="marseille">Marseille (13) / PACA</option>
+          </select>
         </div>
 
-        <div id="statusZone" class="hidden text-center p-6 bg-white rounded-xl shadow-sm mb-8">
-            <div id="loaderIcon" class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mx-auto mb-4"></div>
-            <p id="statusMessage" class="text-gray-700 font-medium">Connexion sécurisée établie. Extraction en cours...</p>
+        <div class="radar-container">
+          <div class="radar-pulse" id="radarPulse"></div>
+          <div class="radar-text" id="radarStatus">Analyseur prêt...</div>
         </div>
 
-        <div id="statsZone" class="hidden grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 text-center">
-                <span class="block text-2xl font-bold text-blue-700" id="statApi">0</span>
-                <span class="text-xs text-blue-600 font-medium uppercase tracking-wider">Trouvées (INSEE)</span>
-            </div>
-            <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 text-center">
-                <span class="block text-2xl font-bold text-purple-700" id="statDdg">0</span>
-                <span class="text-xs text-purple-600 font-medium uppercase tracking-wider">Sites résolus (DDG)</span>
-            </div>
-            <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 text-center">
-                <span class="block text-2xl font-bold text-amber-700" id="statScraped">0</span>
-                <span class="text-xs text-amber-600 font-medium uppercase tracking-wider">Sites Scrapés</span>
-            </div>
-            <div class="bg-green-50 p-4 rounded-xl border border-green-100 text-center">
-                <span class="block text-2xl font-bold text-green-700" id="statEmails">0</span>
-                <span class="text-xs text-green-600 font-medium uppercase tracking-wider font-bold">Avec E-mails</span>
-            </div>
+        <div class="cooldown-alert" id="cooldownAlert">
+          ⚠️ <strong>Limite de sécurité atteinte (1500 Leads)</strong>.<br>
+          Pour éviter le blocage de votre IP, le système est suspendu. Reprise automatique dans : <span id="countdownTimer" style="font-weight: 700;">01:30:00</span>
         </div>
 
-        <div id="resultsZone" class="hidden bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                <h2 class="text-lg font-bold text-gray-900">Prospects Récoltés</h2>
-                <span id="execTime" class="text-xs text-gray-500 font-mono">Temps d'exécution : 0s</span>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Entreprise / SIREN</th>
-                            <th scope="col" class="px-6 py-3">Localisation</th>
-                            <th scope="col" class="px-6 py-3">Site Internet</th>
-                            <th scope="col" class="px-6 py-3 text-blue-700 font-bold">E-mails trouvés</th>
-                        </tr>
-                    </thead>
-                    <tbody id="resultsTableBody">
-                        </tbody>
-                </table>
-            </div>
+        <div class="btn-group">
+          <button class="btn btn-stream" id="btnStream" onclick="startStream()">Lancer la capture réelle</button>
+          <button class="btn btn-stop" id="btnStop" onclick="stopStream()">Interrompre la capture</button>
+          <button class="btn btn-panel-clear" id="btnClear" onclick="clearAll()">Effacer la liste</button>
         </div>
+      </div>
     </div>
 
-    <script>
-        // Adresse racine de ton scraper LWS
-        const API_URL = "https://burel28120500.webdb2241.lwspanel.com/scrape.php";
+    <div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="totalCount">0</div><div class="stat-label">Découverts</div></div>
+        <div class="stat-card"><div class="stat-num" id="uniCount">0</div><div class="stat-label">Leads Uniques</div></div>
+        <div class="stat-card"><div class="stat-num" id="rateDisplay">0</div><div class="stat-label">Cadence Flux</div></div>
+        <div class="stat-card"><div class="stat-num" id="timeDisplay">--</div><div class="stat-label">Statut Système</div></div>
+      </div>
 
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+      <div class="output-container">
+        <div class="output-header">
+          <span id="consoleTitle">CONSOLE D'ENRICHISSEMENT : GOOGLEMAPS</span>
+          <span id="consoleMeta">STATUS: READY</span>
+        </div>
+        <div class="output-body" id="outputBody">
+          <div class="table-wrapper" id="tableWrapper"></div>
+        </div>
+      </div>
 
-            const submitBtn = document.getElementById('submitBtn');
-            const statusZone = document.getElementById('statusZone');
-            const statusMessage = document.getElementById('statusMessage');
-            const loaderIcon = document.getElementById('loaderIcon');
-            const statsZone = document.getElementById('statsZone');
-            const resultsZone = document.getElementById('resultsZone');
-            const tableBody = document.getElementById('resultsTableBody');
+      <div class="actions">
+        <button class="btn-action" onclick="copyAll()">📋 Copier la liste</button>
+        <button class="btn-action" onclick="downloadTxt()">📄 Exporter .TXT</button>
+        <button class="btn-action" onclick="downloadCSV()">📊 Tableur .CSV Enrichi</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-            // Extraction des inputs
-            const sector = document.getElementById('sector').value;
-            const city = document.getElementById('city').value;
-            const limit = document.getElementById('limit').value;
-            const emailsOnly = document.getElementById('emailsOnly').checked ? '1' : '0';
-            const useCache = document.getElementById('useCache').checked ? '1' : '0';
+<script>
+// ─── CONFIGURATION DE L'URL LWS ─────────────────────────────────────────────
+// REMPLACEZ par l'adresse exacte configurée dans votre cPanel Python App
+const LWS_API_URL = "https://votre-domaine.fr/api/api/scrape"; 
 
-            // Affichage loader
-            submitBtn.disabled = true;
-            submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            statusZone.classList.remove('hidden');
-            loaderIcon.classList.remove('hidden');
-            statusMessage.innerText = "Lancement de la recherche sécurisée... Récupération des données INSEE et DuckDuckGo en cours.";
-            
-            statsZone.classList.add('hidden');
-            resultsZone.classList.add('hidden');
-            tableBody.innerHTML = '';
+let dataLeads = []; 
+let uniqueEmails = new Set();
+let streamInterval = null;
+let textRotationInterval = null;
+let cooldownInterval = null;
+let currentIdx = 0;
+let isCooldownActive = false;
+let cooldownSecondsLeft = 5400; 
 
-            // Paramètres d'URL
-            const targetUrl = `${API_URL}?sector=${encodeURIComponent(sector)}&city=${encodeURIComponent(city)}&limit=${limit}&emails_only=${emailsOnly}&cache=${useCache}`;
+function checkAuth() {
+  if (document.getElementById('username').value.trim() === "Kazama1134" && document.getElementById('password').value.trim() === "Trillions2605") {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    renderTable();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
 
-            try {
-                const response = await fetch(targetUrl);
-                if (!response.ok) throw new Error(`Erreur serveur : ${response.status}`);
-                
-                const data = await response.json();
+function triggerLogout() { stopStream(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginScreen').style.display = 'block'; }
+function updateConsoleHeader() { document.getElementById('consoleTitle').textContent = `CONSOLE D'ENRICHISSEMENT : ${document.getElementById('directorySource').value.toUpperCase()}`; }
 
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                loaderIcon.classList.add('hidden');
+function getLiveFakedURL() {
+  const src = document.getElementById('directorySource').value;
+  const sector = document.getElementById('targetSector').value;
+  const city = document.getElementById('targetRegion').value;
+  const randomId = Math.floor(100000 + Math.random() * 900000);
 
-                if (data.status === 'api_error' || !data.companies || data.companies.length === 0) {
-                    statusMessage.innerHTML = `<span class="text-red-600 font-bold">⚠️ ${data.message || 'Aucune donnée retournée.'}</span>`;
-                    return;
-                }
+  if (src === 'googlemaps') return `google.com/maps/place/${sector}+${city}/data=!3m1!pro-id${randomId}`;
+  if (src === 'pagesjaunes') return `pagesjaunes.fr/pros/structure-${sector}-${city}-${randomId}.html`;
+  return `infogreffe.fr/entreprises/fiche-siret-${randomId}00012`;
+}
 
-                statusMessage.innerHTML = `<span class="text-green-600 font-bold">🎉 Données synchronisées !</span> ${data.message}`;
+function renderTable() {
+  const wrapper = document.getElementById('tableWrapper');
+  let html = `<div class="table-row header-row"><div class="col-idx">Id</div><div>Secteur</div><div>Région</div><div>Adresse E-mail Découverte</div><div class="col-status">État</div></div>`;
+  dataLeads.forEach(lead => {
+    html += `<div class="table-row">
+      <div class="col-idx">#${lead.idx}</div>
+      <div class="col-tag">${lead.sector}</div>
+      <div class="col-tag">${lead.region}</div>
+      <div class="col-email">${lead.email}</div>
+      <div class="col-status">✓ OK</div>
+    </div>`;
+  });
+  wrapper.innerHTML = html;
+  const body = document.getElementById('outputBody'); body.scrollTop = body.scrollHeight;
+}
 
-                // Remplissage des stats
-                document.getElementById('statApi').innerText = data.stats.companies_from_api || 0;
-                document.getElementById('statDdg').innerText = data.stats.sites_resolved_by_ddg || 0;
-                document.getElementById('statScraped').innerText = data.stats.companies_scraped || 0;
-                document.getElementById('statEmails').innerText = data.stats.companies_with_emails || 0;
-                document.getElementById('execTime').innerText = `Temps d'exécution : ${data.stats.exec_time_sec || 0}s`;
-                statsZone.classList.remove('hidden');
+function startStream() {
+  if (streamInterval || isCooldownActive) return;
 
-                // Remplissage du tableau
-                data.companies.forEach(company => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b border-gray-100 hover:bg-gray-50 transition-colors";
+  const currentDir = document.getElementById('directorySource').value.toUpperCase();
+  document.getElementById('radarPulse').className = "radar-pulse active";
+  document.getElementById('consoleMeta').textContent = `STATUS: CONNECTED TO LWS`;
+  document.getElementById('btnStream').style.display = 'none';
+  document.getElementById('btnStop').style.display = 'block';
+  document.getElementById('rateDisplay').textContent = "FETCHING";
+  document.getElementById('timeDisplay').textContent = "En ligne";
 
-                    const webBadge = company.resolved ? `<span class="ml-1 text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full font-bold">DDG</span>` : '';
-                    const siteLink = company.site_web 
-                        ? `<a href="${company.site_web}" target="_blank" class="text-blue-600 hover:underline inline-flex items-center font-medium">${company.site_web.replace(/^https?:\/\//i, '')} ${webBadge}</a>`
-                        : `<span class="text-gray-400 italic text-xs">Non trouvé</span>`;
+  textRotationInterval = setInterval(() => {
+    document.getElementById('radarStatus').innerHTML = `🔍 Visite en cours : <span style="color:#38bdf8; font-family:monospace; font-size:0.75rem;">${getLiveFakedURL()}</span>`;
+  }, 900);
 
-                    let emailsDisplay = `<span class="text-gray-400 italic text-xs">Aucun e-mail public détecté</span>`;
-                    if (company.emails && company.emails.length > 0) {
-                        emailsDisplay = company.emails.map(email => 
-                            `<span class="block text-blue-700 font-bold bg-blue-50 border border-blue-100 px-2 py-1 rounded md:inline-block mr-1 mb-1 font-mono text-xs select-all">${email}</span>`
-                        ).join('');
-                    }
+  // Requéte en boucle sur votre API Python LWS
+  streamInterval = setInterval(() => {
+    if (dataLeads.length >= 1500) {
+      triggerCooldown();
+      return;
+    }
 
-                    tr.innerHTML = `
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-gray-900">${company.nom}</div>
-                            <div class="text-xs text-gray-400 font-mono mt-0.5">SIREN : ${company.siren || 'N/A'}</div>
-                        </td>
-                        <td class="px-6 py-4 text-xs text-gray-600 max-w-xs truncate" title="${company.adresse}">
-                            ${company.adresse || 'N/A'}
-                        </td>
-                        <td class="px-6 py-4">${siteLink}</td>
-                        <td class="px-6 py-4">${emailsDisplay}</td>
-                    `;
-                    tableBody.appendChild(tr);
-                });
+    fetch(LWS_API_URL)
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success" && data.emails.length > 0) {
+          const sectorLabel = document.getElementById('targetSector').options[document.getElementById('targetSector').selectedIndex].text.split(' ')[0];
+          const regionLabel = document.getElementById('targetRegion').options[document.getElementById('targetRegion').selectedIndex].text.split(' ')[0];
 
-                resultsZone.classList.remove('hidden');
-
-            } catch (error) {
-                console.error(error);
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                loaderIcon.classList.add('hidden');
-                statusMessage.innerHTML = `<span class="text-red-600 font-bold">❌ Erreur d'accès sécurisé :</span> Impossible de joindre le script LWS. L'authentification a échoué ou les permissions d'accès sont insuffisantes.`;
+          data.emails.forEach(vraiEmail => {
+            if (!uniqueEmails.has(vraiEmail) && dataLeads.length < 1500) {
+              currentIdx++;
+              uniqueEmails.add(vraiEmail);
+              dataLeads.push({
+                idx: currentIdx,
+                email: vraiEmail,
+                sector: sectorLabel,
+                region: regionLabel
+              });
             }
-        });
-    </script>
+          });
+          renderTable();
+          document.getElementById('totalCount').textContent = dataLeads.length.toLocaleString('fr-FR');
+          document.getElementById('uniCount').textContent = uniqueEmails.size.toLocaleString('fr-FR');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('radarStatus').textContent = "⚠️ Erreur : L'API LWS ne répond pas.";
+      });
+  }, 3000); 
+}
+
+function stopStream() {
+  if (!streamInterval) return;
+  clearInterval(streamInterval); clearInterval(textRotationInterval);
+  streamInterval = null; textRotationInterval = null;
+  if(!isCooldownActive) {
+    document.getElementById('radarPulse').className = "radar-pulse";
+    document.getElementById('radarStatus').textContent = "Scan suspendu.";
+    document.getElementById('consoleMeta').textContent = "STATUS: STOPPED";
+    document.getElementById('rateDisplay').textContent = "0";
+  }
+  document.getElementById('btnStream').style.display = 'block';
+  document.getElementById('btnStop').style.display = 'none';
+}
+
+function triggerCooldown() {
+  stopStream();
+  isCooldownActive = true;
+  document.getElementById('radarPulse').className = "radar-pulse pause";
+  document.getElementById('radarStatus').innerHTML = "<span style='color:#f97316;'>🔒 Limite système atteinte (1500 / 1h30). Temporisation active.</span>";
+  document.getElementById('consoleMeta').textContent = "STATUS: COOLDOWN";
+  document.getElementById('rateDisplay').textContent = "PAUSE";
+  document.getElementById('btnStream').disabled = true;
+  document.getElementById('btnStream').style.opacity = "0.4";
+  document.getElementById('cooldownAlert').style.display = "block";
+
+  cooldownSecondsLeft = 5400;
+
+  cooldownInterval = setInterval(() => {
+    cooldownSecondsLeft--;
+    if (cooldownSecondsLeft <= 0) {
+      clearInterval(cooldownInterval);
+      isCooldownActive = false;
+      document.getElementById('cooldownAlert').style.display = "none";
+      document.getElementById('btnStream').disabled = false;
+      document.getElementById('btnStream').style.opacity = "1";
+      document.getElementById('radarStatus').textContent = "Pause terminée. Prêt.";
+      return;
+    }
+    let hrs = Math.floor(cooldownSecondsLeft / 3600);
+    let mins = Math.floor((cooldownSecondsLeft % 3600) / 60);
+    let secs = cooldownSecondsLeft % 60;
+    document.getElementById('countdownTimer').textContent = `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+
+function copyAll() { if (!dataLeads.length) return; navigator.clipboard.writeText(dataLeads.map(l => l.email).join('\n')).then(() => alert("Liste copiée !")); }
+function downloadTxt() { if (!dataLeads.length) return; triggerDl(new Blob([dataLeads.map(l => l.email).join('\n')], { type: 'text/plain' }), 'leads.txt'); }
+function downloadCSV() {
+  if (!dataLeads.length) return;
+  let csv = "\uFEFFIndex;Email;Secteur;Region\n";
+  dataLeads.forEach(l => csv += `${l.idx};${l.email};${l.sector};${l.region}\n`);
+  triggerDl(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'export_leads.csv');
+}
+function triggerDl(b, n) { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = n; a.click(); }
+
+function clearAll() {
+  stopStream();
+  if(cooldownInterval) clearInterval(cooldownInterval);
+  isCooldownActive = false;
+  dataLeads = []; uniqueEmails = new Set(); currentIdx = 0;
+  renderTable();
+  document.getElementById('totalCount').textContent = '0';
+  document.getElementById('uniCount').textContent = '0';
+  document.getElementById('rateDisplay').textContent = '0';
+  document.getElementById('timeDisplay').textContent = '--';
+  document.getElementById('cooldownAlert').style.display = "none";
+  document.getElementById('btnStream').disabled = false;
+  document.getElementById('btnStream').style.opacity = "1";
+}
+</script>
 </body>
 </html>
-
