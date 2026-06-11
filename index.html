@@ -96,6 +96,8 @@
   .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
   .btn-action { background: #1e293b; border: 1px solid #334155; color: #e2e8f0; padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
   .btn-action:hover { background: #334155; }
+  .btn-github { background: #238636; color: white; border-color: #2ea44f; }
+  .btn-github:hover { background: #2ea44f; }
 </style>
 </head>
 <body>
@@ -108,6 +110,7 @@
   <p>Authentification requise pour accéder au réseau</p>
   <div class="input-group"><label>Identifiant</label><input type="text" id="username" class="input-field" autocomplete="off"></div>
   <div class="input-group"><label>Mot de passe</label><input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="off"></div>
+  <div class="input-group"><label>GitHub Classic Token (scopes: repo)</label><input type="password" id="githubToken" class="input-field" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off"></div>
   <button class="btn-login" onclick="checkAuth()">Se connecter</button>
   <div id="loginError">Identifiants incorrects. Accès refusé.</div>
 </div>
@@ -194,6 +197,7 @@
       </div>
 
       <div class="actions">
+        <button class="btn-action btn-github" onclick="sauvegarderFluxVersGitHub()">💾 Push vers GitHub (emails2.txt)</button>
         <button class="btn-action" onclick="copyAll()">📋 Copier la liste</button>
         <button class="btn-action" onclick="downloadTxt()">📄 Exporter .TXT</button>
         <button class="btn-action" onclick="downloadCSV()">📊 Tableur .CSV Enrichi</button>
@@ -203,21 +207,38 @@
 </div>
 
 <script>
-const PRENOMS = ["thomas", "nicolas", "julien", "maxime", "kevin", "lucas", "leandro", "romain", "laurent", "stephane", "david", "antoine", "matthieu", "alexandre", "guillaume", "sophie", "marie", "audrey", "camille", "elodie", "sarah", "clara", "manon", "chloe"];
-const NOMS = ["martin", "bernard", "dubois", "thomas", "robert", "richard", "petit", "durand", "lefevre", "moreau", "simon", "laurent", "michel", "garcia", "bonnet", "roux", "vincent", "fournier", "morel", "girard", "andre", "lefevre", "mercier", "dupont"];
+const REPO_OWNER = "Kazama1134"; 
+const REPO_NAME = "Premiummail-France";
+const FILE_PATH = "emails2.txt"; 
+
+// Dictionnaires d'identités françaises
+const PRENOMS = ["thomas", "nicolas", "julien", "maxime", "kevin", "lucas", "leandro", "romain", "laurent", "stephane", "david", "antoine", "matthieu", "alexandre", "guillaume", "sophie", "marie", "audrey", "camille", "elodie", "sarah", "clara", "manon", "chloe", "hugo", "enzo", "arthur", "paul", "louis"];
+const NOMS = ["martin", "bernard", "dubois", "thomas", "robert", "richard", "petit", "durand", "lefevre", "moreau", "simon", "laurent", "michel", "garcia", "bonnet", "roux", "vincent", "fournier", "morel", "girard", "andre", "leclerc", "mercier", "dupont", "fontaine", "guerin", "boyer"];
+
+// Mots d'entreprises B2B pour générer de nouveaux domaines réalistes infinis
+const SUB_KEYWORDS = ["expert", "conseil", "finance", "tech", "concept", "solutions", "groupe", "france", "btp", "immo", "digital", "com", "marketing", "logistique", "industrie", "services", "management", "invest"];
+const EXTENSIONS_COMMUNES = [".fr", ".com", ".net", ".org", ".co"];
 
 let baseEmailsExtraits = []; 
+let domainesExtraits = [];
+let extensionsExtraites = [];
+let GITHUB_TOKEN = "";
 
-// Charge l'unique fichier emails2.txt à côté du index.html
+// Charge l'unique fichier emails2.txt à côté de l'application
 async function chargerFichiersTxt() {
   try {
-    const res2 = await fetch('emails2.txt');
+    const res2 = await fetch('emails2.txt?t=' + new Date().getTime()); // Évite le cache navigateur
     if(res2.ok) {
       const text2 = await res2.text();
+      baseEmailsExtraits = [];
+      domainesExtraits = [];
+      extensionsExtraites = [];
+      
       extraireEmailsDepuisTexte(text2);
+      
       document.getElementById('statusTxt2').textContent = "CONNECTÉ";
       document.getElementById('statusTxt2').className = "badge-status status-loaded";
-      document.getElementById('radarStatus').textContent = `${baseEmailsExtraits.length} structures chargées. Prêt.`;
+      document.getElementById('radarStatus').textContent = `${baseEmailsExtraits.length} emails chargés. Prêt pour génération infinie.`;
     } else {
       document.getElementById('statusTxt2').textContent = "ERREUR (404)";
       document.getElementById('radarStatus').textContent = "Fichier emails2.txt introuvable.";
@@ -234,45 +255,84 @@ function extraireEmailsDepuisTexte(brut) {
       const propre = l.trim().toLowerCase();
       if(propre && !baseEmailsExtraits.includes(propre)) {
         baseEmailsExtraits.push(propre);
+        
+        // Extraction intelligente des briques de domaine
+        const parts = propre.split('@');
+        if(parts.length === 2) {
+          const fullDomaine = parts[1];
+          const extMatch = fullDomaine.match(/\.[a-z]{2,4}$/);
+          
+          if(extMatch) {
+            const ext = extMatch[0];
+            const racineDomaine = fullDomaine.replace(ext, "");
+            
+            if(!extensionsExtraites.includes(ext)) extensionsExtraites.push(ext);
+            
+            // Nettoyage de la racine (on enlève les chiffres ou tirets isolés)
+            const racinePropre = racineDomaine.replace(/[0-9]/g, '').replace(/^-+|-+$/g, '');
+            if(racinePropre.length > 2 && !domainesExtraits.includes(racinePropre)) {
+              domainesExtraits.push(racinePropre);
+            }
+          }
+        }
       }
     }
   });
+
+  // Sécurité si le fichier d'origine est trop petit ou vide
+  if(domainesExtraits.length === 0) domainesExtraits = ["entreprise-concept", "societe-france", "agence-b2b"];
+  if(extensionsExtraites.length === 0) extensionsExtraites = [".fr", ".com"];
 }
 
 function genererPrefixeFrancais() {
   const p = PRENOMS[Math.floor(Math.random() * PRENOMS.length)];
   const n = NOMS[Math.floor(Math.random() * NOMS.length)];
   const r = Math.random();
-  if (r < 0.4) return `${p}.${n}`;
-  if (r < 0.7) return `${p.charAt(0)}.${n}`;
-  if (r < 0.85) return "contact";
+  if (r < 0.45) return `${p}.${n}`;
+  if (r < 0.75) return `${p.charAt(0)}.${n}`;
+  if (r < 0.90) return "contact";
   return "direction";
 }
 
+// ALGORITHME DE RE-GÉNÉRATION PROCEDURALE INFINIE ET RÉALISTE
 function fabriquerNouveauMailPro() {
-  if(baseEmailsExtraits.length === 0) return `contact@societe-concept.fr`;
-
-  // Sélectionne au hasard un e-mail de ta liste emails2.txt
-  const mailSource = baseEmailsExtraits[Math.floor(Math.random() * baseEmailsExtraits.length)];
-  const parts = mailSource.split('@');
-  if(parts.length !== 2) return `contact@societe-france.fr`;
-
-  let domaine = parts[1];
   const mode = document.getElementById('generationMode').value;
   const forceFr = document.getElementById('forcedSuffix').value;
+  
+  let domaineFinal = "";
+  let extensionFinale = extensionsExtraites[Math.floor(Math.random() * extensionsExtraites.length)];
 
-  if (mode === 'mixte' && (domaine.match(/[0-9]{4,}/) || domaine.length > 22)) {
-    domaine = "entreprise-concept";
+  if (mode === 'strict' && baseEmailsExtraits.length > 0) {
+    // Mode strict : On pioche un vrai domaine existant pur
+    const mailSource = baseEmailsExtraits[Math.floor(Math.random() * baseEmailsExtraits.length)];
+    domaineFinal = mailSource.split('@')[1];
+  } else {
+    // Mode mixte / Francisation totale : Création de combinaisons infinies basées sur tes patterns originaux
+    const baseRacine = domainesExtraits[Math.floor(Math.random() * domainesExtraits.length)];
+    const motBusiness = SUB_KEYWORDS[Math.floor(Math.random() * SUB_KEYWORDS.length)];
+    
+    const r = Math.random();
+    if (r < 0.3) {
+      domaineFinal = `${baseRacine}-${motBusiness}`;
+    } else if (r < 0.6) {
+      domaineFinal = `${motBusiness}-${baseRacine}`;
+    } else {
+      domaineFinal = baseRacine; // Conserver la racine d'origine pure
+    }
+    
+    // Ajout de l'extension tirée de ton fichier d'origine
+    domaineFinal += extensionFinale;
   }
 
+  // Application forcée du filtre d'extension si demandé
   if (forceFr === 'fr') {
-    domaine = domaine.replace(/\.[a-z]{2,4}$/, '.fr');
+    domaineFinal = domaineFinal.replace(/\.[a-z]{2,4}$/, '.fr');
   }
 
-  return `${genererPrefixeFrancais()}@${domaine}`;
+  return `${genererPrefixeFrancais()}@${domaineFinal}`;
 }
 
-// ─── INTERFACE ─────────────────────────────────────────────────────────────
+// ─── INTERFACE & MACHINE DE FLUX ───────────────────────────────────────────
 let dataLeads = []; 
 let uniqueEmails = new Set();
 let streamInterval = null;
@@ -283,17 +343,29 @@ let isCooldownActive = false;
 let cooldownSecondsLeft = 5400; 
 
 function checkAuth() {
-  if (document.getElementById('username').value.trim() === "Kazama1134" && document.getElementById('password').value.trim() === "Trillions2605") {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const tokenInput = document.getElementById('githubToken').value.trim();
+
+  if (user === "Kazama1134" && pass === "Trillions2605" && tokenInput !== "") {
+    GITHUB_TOKEN = tokenInput;
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appContainer').style.display = 'block';
     renderTable();
     chargerFichiersTxt();
   } else {
     document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginError').textContent = "Identifiants invalides ou Token manquant.";
   }
 }
 
-function triggerLogout() { stopStream(); document.getElementById('appContainer').style.display = 'none'; document.getElementById('loginScreen').style.display = 'block'; }
+function triggerLogout() { 
+  stopStream(); 
+  GITHUB_TOKEN = ""; 
+  document.getElementById('githubToken').value = "";
+  document.getElementById('appContainer').style.display = 'none'; 
+  document.getElementById('loginScreen').style.display = 'block'; 
+}
 
 function renderTable() {
   const wrapper = document.getElementById('tableWrapper');
@@ -312,7 +384,7 @@ function renderTable() {
 }
 
 function startStream() {
-  if (streamInterval || isCooldownActive || baseEmailsExtraits.length === 0) return;
+  if (streamInterval || isCooldownActive || domainesExtraits.length === 0) return;
 
   document.getElementById('radarPulse').className = "radar-pulse active";
   document.getElementById('consoleMeta').textContent = `STATUS: PROCEDURAL GENERATOR`;
@@ -322,7 +394,7 @@ function startStream() {
   document.getElementById('timeDisplay').textContent = "En ligne";
 
   textRotationInterval = setInterval(() => {
-    document.getElementById('radarStatus').innerHTML = `⚡ Traitement : <span style="color:#38bdf8; font-family:monospace;">Modification depuis emails2.txt...</span>`;
+    document.getElementById('radarStatus').innerHTML = `⚡ Traitement : <span style="color:#38bdf8; font-family:monospace;">Hybridation infinie depuis les modèles...</span>`;
   }, 1400);
 
   streamInterval = setInterval(() => {
@@ -336,7 +408,7 @@ function startStream() {
       dataLeads.push({
         idx: currentIdx,
         email: emailAdapteRealiste,
-        sector: "emails2.txt",
+        sector: "emails2.txt (Model)",
         region: "Filtre-FR"
       });
       
@@ -391,8 +463,59 @@ function triggerCooldown() {
   }, 1000);
 }
 
-function copyAll() { if (!dataLeads.length) return; navigator.clipboard.writeText(dataLeads.map(l => l.email).join('\n')).then(() => alert("Copié !")); }
-// Correction de la variable dans le téléchargement (b remplace l'ancienne référence de bloc)
+// ─── COMMIT DES NOUVEAUX EMAILS VERS GITHUB ────────────────────────────────
+async function sauvegarderFluxVersGitHub() {
+  if (!dataLeads.length) return alert("Aucun lead présent dans le flux pour l'instant.");
+  
+  const texteAEnregistrer = dataLeads.map(l => l.email).join('\n');
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+  
+  document.getElementById('consoleMeta').textContent = "STATUS: PUSHING TO GITHUB...";
+
+  try {
+    const resGet = await fetch(url, {
+      headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+    });
+    
+    let sha = "";
+    if (resGet.ok) {
+      const dataGet = await resGet.json();
+      sha = dataGet.sha;
+    }
+
+    const base64Content = btoa(unescape(encodeURIComponent(texteAEnregistrer)));
+
+    const resPut = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${GITHUB_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Injecteur infini : Écriture de nouveaux leads réalistes",
+        content: base64Content,
+        sha: sha
+      })
+    });
+
+    if (resPut.ok) {
+      alert("Fichier emails2.txt mis à jour sur GitHub avec les nouvelles adresses uniques !");
+      document.getElementById('consoleMeta').textContent = "STATUS: GITHUB UPDATED";
+      chargerFichiersTxt();
+    } else {
+      const errData = await resPut.json();
+      console.error(errData);
+      alert("Erreur GitHub : Vérifie les permissions de ton Token.");
+      document.getElementById('consoleMeta').textContent = "STATUS: GITHUB ERROR";
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Impossible de joindre l'API GitHub.");
+  }
+}
+
+// ─── EXPORTS LOCAUX ────────────────────────────────────────────────────────
+function copyAll() { if (!dataLeads.length) return; navigator.clipboard.writeText(dataLeads.map(l => l.email).join('\n')).then(() => alert("Copié dans le presse-papier !")); }
 function downloadTxt() { if (!dataLeads.length) return; triggerDl(new Blob([dataLeads.map(l => l.email).join('\n')], { type: 'text/plain' }), 'leads_clean.txt'); }
 function downloadCSV() {
   if (!dataLeads.length) return;
