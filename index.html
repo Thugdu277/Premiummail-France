@@ -1,461 +1,1310 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-mail Finder Pro</title>
-    <!-- Vous pouvez insérer vos styles CSS ici si vous en avez -->
-    <style>
-        /* Vos styles CSS existants peuvent être placés ici */
-        body { font-family: sans-serif; padding: 20px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-mail Finder Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --primary-dark: #1d4ed8;
+    --accent: #0ea5e9;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --white: #ffffff;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 60%, #1e293b 100%);
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.3);
+    text-align: center;
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .login-logo-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .login-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -0.03em;
+  }
+
+  .login-title span { color: var(--primary); }
+
+  .login-sub {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-bottom: 36px;
+    margin-top: 4px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .login-field {
+    position: relative;
+    margin-bottom: 16px;
+    text-align: left;
+  }
+
+  .login-field label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .login-field input {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--gray-800);
+    background: var(--gray-50);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  .login-field input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    background: var(--white);
+  }
+
+  .login-field svg {
+    position: absolute;
+    left: 14px;
+    bottom: 13px;
+    color: var(--gray-400);
+    pointer-events: none;
+  }
+
+  .login-error {
+    color: var(--danger);
+    font-size: 0.78rem;
+    margin-bottom: 14px;
+    display: none;
+    background: #fef2f2;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  .btn-login {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-login:active { transform: translateY(0); }
+
+  /* ── APP ── */
+  #appScreen { display: none; }
+
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 28px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .topbar-logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .topbar-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    letter-spacing: -0.02em;
+  }
+  .topbar-name span { color: var(--primary); }
+
+  .topbar-badge {
+    font-size: 0.6rem;
+    background: var(--primary);
+    color: white;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar-stats {
+    display: flex;
+    gap: 20px;
+  }
+
+  .ts { text-align: right; }
+  .ts-num { font-size: 1.1rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+  .ts-label { font-size: 0.62rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .btn-logout {
+    background: none;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-logout:hover { background: var(--gray-100); color: var(--gray-700); }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  /* ── PANEL GAUCHE ── */
+  .panel {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-header h3 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .panel-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+
+  .field-group label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-group select,
+  .field-group input[type="number"] {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--gray-800);
+    background: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+
+  .field-group select:focus,
+  .field-group input[type="number"]:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--gray-100);
+    margin: 2px 0;
+  }
+
+  /* Boutons action */
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity 0.2s, transform 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 10px;
+    background: var(--white);
+    color: var(--gray-600);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--gray-50); border-color: var(--gray-300); }
+
+  .btn-danger {
+    width: 100%;
+    padding: 10px;
+    background: #fef2f2;
+    color: var(--danger);
+    border: 1.5px solid #fecaca;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: all 0.15s;
+  }
+  .btn-danger:hover { background: #fee2e2; }
+
+  /* ── PANEL DROIT ── */
+  .right-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Scan header */
+  .scan-header {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    padding: 18px 22px;
+  }
+
+  .scan-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .scan-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    transition: background 0.3s;
+  }
+  .scan-dot.active {
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(16,185,129,.2);
+    animation: pulse-dot 1.5s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(16,185,129,.2); }
+    50% { box-shadow: 0 0 0 6px rgba(16,185,129,.08); }
+  }
+
+  .scan-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .scan-target {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .progress-wrap {
+    height: 5px;
+    background: var(--gray-100);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-bar.animated {
+    animation: progress-anim 2s ease-in-out infinite;
+  }
+  @keyframes progress-anim {
+    0% { width: 15%; margin-left: 0; }
+    50% { width: 40%; margin-left: 30%; }
+    100% { width: 15%; margin-left: 85%; }
+  }
+
+  /* Results table */
+  .results-panel {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .results-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .results-header h3 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .results-count {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    background: var(--gray-100);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .table-wrap {
+    height: 420px;
+    overflow-y: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    background: var(--gray-50);
+    padding: 9px 16px;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    border-bottom: 1px solid var(--gray-200);
+    z-index: 1;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--gray-50);
+    transition: background 0.1s;
+    animation: row-in 0.3s ease;
+  }
+  tbody tr:hover { background: var(--primary-light); }
+
+  @keyframes row-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  tbody td {
+    padding: 9px 16px;
+    vertical-align: middle;
+  }
+
+  .td-email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--gray-800);
+    font-weight: 500;
+  }
+
+  .td-secteur {
+    font-size: 0.74rem;
+    color: var(--gray-600);
+  }
+
+  .td-pays {
+    font-size: 0.74rem;
+    color: var(--gray-500);
+  }
+
+  .td-ville {
+    font-size: 0.74rem;
+    color: var(--gray-500);
+  }
+
+  .td-time {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .badge-secteur {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+
+  /* Export bar */
+  .export-bar {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow);
+    padding: 14px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .export-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-right: 4px;
+  }
+
+  .btn-export {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1.5px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-600);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn-export:hover { background: var(--gray-50); border-color: var(--gray-300); color: var(--gray-800); }
+
+  /* Scrollbar */
+  .table-wrap::-webkit-scrollbar { width: 5px; }
+  .table-wrap::-webkit-scrollbar-track { background: var(--gray-50); }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .topbar-stats { display: none; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- L'interface de votre application (écrans de connexion et de l'app) doit être ici -->
-    <div id="loginScreen">
-        <input type="text" id="loginUser" placeholder="Utilisateur">
-        <input type="password" id="loginPass" placeholder="Mot de passe">
-        <button onclick="doLogin()">Connexion</button>
-        <p id="loginError" style="display:none; color:red;">Identifiants incorrects</p>
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <path d="M11 8a3 3 0 0 1 0 6"/>
+        </svg>
+      </div>
+      <div class="login-title">E-mail Finder <span>Pro</span></div>
+    </div>
+    <div class="login-sub">Accès sécurisé — Plateforme B2B</div>
+
+    <div class="login-field">
+      <label>Identifiant</label>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="bottom:13px">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <input type="text" id="loginUser" placeholder="Identifiant" autocomplete="username">
     </div>
 
-    <div id="appScreen" style="display:none;">
-        <!-- Vos sélecteurs, boutons, barres de progression et tableaux vont ici -->
-        <select id="pays" onchange="updateVilles()">
-            <option value="fr">France</option>
-            <option value="be">Belgique</option>
-            <option value="ch">Suisse</option>
-        </select>
-        <select id="ville"></select>
-        <select id="secteur">
-            <option value="all">Général</option>
-        </select>
-        <select id="targetCount" onchange="toggleCustom()">
-            <option value="100">100</option>
-            <option value="custom">Personnalisé</option>
-        </select>
-        <div id="customField" style="display:none;">
-            <input type="number" id="customCount" value="500">
+    <div class="login-field">
+      <label>Mot de passe</label>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      <input type="password" id="loginPass" placeholder="••••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <div class="login-error" id="loginError">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Identifiant ou mot de passe incorrect.
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      Se connecter
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════ APP ═══════════════════ -->
+<div id="appScreen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <path d="M11 8a3 3 0 0 1 0 6"/>
+        </svg>
+      </div>
+      <span class="topbar-name">E-mail Finder <span>Pro</span><span class="topbar-badge">B2B</span></span>
+    </div>
+
+    <div class="topbar-right">
+      <div class="topbar-stats">
+        <div class="ts">
+          <div class="ts-num" id="statTotal">0</div>
+          <div class="ts-label">Trouvés</div>
         </div>
-        
-        <button onclick="startScan()">Démarrer</button>
-        <button onclick="stopScan()">Arrêter</button>
-        <button onclick="clearAll()">Vider</button>
-        
-        <div id="scanDot"></div>
-        <div id="scanLabel">En attente</div>
-        <div id="scanTarget">—</div>
-        <div id="progressBar" style="width:0%; height:10px; background:blue;"></div>
-        
-        <div>Total: <span id="statTotal">0</span> | Uniques: <span id="statUniq">0</span> | Débit: <span id="statRate">0</span>/m</div>
-        <div id="resultsCount">0 email(s)</div>
-        
-        <table>
-            <tbody id="tbody"></tbody>
-        </table>
+        <div class="ts">
+          <div class="ts-num" id="statUniq">0</div>
+          <div class="ts-label">Uniques</div>
+        </div>
+        <div class="ts">
+          <div class="ts-num" id="statRate">0</div>
+          <div class="ts-label">/ min</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Déconnexion
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PANEL GAUCHE — FILTRES -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="panel">
+        <div class="panel-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          <h3>Paramètres de recherche</h3>
+        </div>
+        <div class="panel-body">
+
+          <div class="field-group">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
+              Secteur d'activité
+            </label>
+            <select id="secteur">
+              <option value="all">Tous secteurs</option>
+              <option value="btp">BTP / Bâtiment</option>
+              <option value="genie">Génie Civil</option>
+              <option value="immo">Immobilier</option>
+              <option value="auto">Automobile</option>
+              <option value="sante">Santé / Médical</option>
+              <option value="finance">Finance / Banque</option>
+              <option value="tech">Tech / IT</option>
+              <option value="industrie">Industrie</option>
+              <option value="transport">Transport / Logistique</option>
+              <option value="commerce">Commerce / Retail</option>
+              <option value="juridique">Juridique / Notariat</option>
+              <option value="education">Éducation / Formation</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Pays
+            </label>
+            <select id="pays" onchange="updateVilles()">
+              <option value="fr">🇫🇷 France</option>
+              <option value="be">🇧🇪 Belgique</option>
+              <option value="ch">🇨🇭 Suisse</option>
+              <option value="ca">🇨🇦 Canada</option>
+              <option value="ma">🇲🇦 Maroc</option>
+              <option value="ci">🇨🇮 Côte d'Ivoire</option>
+              <option value="sn">🇸🇳 Sénégal</option>
+              <option value="tn">🇹🇳 Tunisie</option>
+              <option value="de">🇩🇪 Allemagne</option>
+              <option value="es">🇪🇸 Espagne</option>
+              <option value="it">🇮🇹 Italie</option>
+              <option value="uk">🇬🇧 Royaume-Uni</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Ville / Région
+            </label>
+            <select id="ville">
+              <option value="all">Toutes villes</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Quantité cible
+            </label>
+            <select id="targetCount" onchange="toggleCustom()">
+              <option value="50">50 contacts</option>
+              <option value="100">100 contacts</option>
+              <option value="250">250 contacts</option>
+              <option value="500" selected>500 contacts</option>
+              <option value="1000">1 000 contacts</option>
+              <option value="5000">5 000 contacts</option>
+              <option value="custom">Personnalisé</option>
+            </select>
+          </div>
+
+          <div class="field-group" id="customField" style="display:none">
+            <label>Quantité exacte</label>
+            <input type="number" id="customCount" value="500" min="10" max="100000" step="10">
+          </div>
+
+          <div class="divider"></div>
+
+          <button class="btn-primary" onclick="startScan()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Lancer le scan
+          </button>
+
+          <button class="btn-secondary" onclick="stopScan()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+            Arrêter
+          </button>
+
+          <button class="btn-danger" onclick="clearAll()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Vider les résultats
+          </button>
+
+        </div>
+      </div>
+
     </div>
 
-    <!-- ══════════════════════════════════════════════════════ -->
-    <!-- JAVASCRIPT CORRIGÉ ET ENVELOPPÉ DANS LA BALISE SCRIPT -->
-    <!-- ══════════════════════════════════════════════════════ -->
-    <script>
-    // AUTH
-    function doLogin() {
-      const u = document.getElementById('loginUser').value.trim();
-      const p = document.getElementById('loginPass').value;
-      const err = document.getElementById('loginError');
-      if (u === 'Kazama1134' && p === 'Trillions2605') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('appScreen').style.display = 'block';
-        updateVilles();
-        err.style.display = 'none';
-      } else {
-        err.style.display = 'block';
-        document.getElementById('loginPass').value = '';
-      }
+    <!-- COL DROITE -->
+    <div class="right-col">
+
+      <!-- SCAN STATUS -->
+      <div class="scan-header">
+        <div class="scan-status">
+          <div class="scan-dot" id="scanDot"></div>
+          <span class="scan-label" id="scanLabel">En attente</span>
+          <span class="scan-target" id="scanTarget">—</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- RÉSULTATS -->
+      <div class="results-panel">
+        <div class="results-header">
+          <h3>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Résultats de scan
+          </h3>
+          <span class="results-count" id="resultsCount">0 email(s)</span>
+        </div>
+        <div class="table-wrap" id="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Adresse e-mail</th>
+                <th>Secteur</th>
+                <th>Pays</th>
+                <th>Ville</th>
+                <th>Détecté à</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EXPORT -->
+      <div class="export-bar">
+        <span class="export-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exporter
+        </span>
+        <button class="btn-export" onclick="copyAll()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copier emails
+        </button>
+        <button class="btn-export" onclick="downloadCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Export CSV
+        </button>
+        <button class="btn-export" onclick="downloadTxt()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Export TXT
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  if (u === 'Kazama1134' && p === 'Trillions2605') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+    updateVilles();
+    err.style.display = 'none';
+  } else {
+    err.style.display = 'block';
+    document.getElementById('loginPass').value = '';
+  }
+}
+function doLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  clearAll();
+}
+
+// ══════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════
+const VILLES = {
+  fr: ["Toutes villes","Paris","Lyon","Marseille","Toulouse","Bordeaux","Nantes","Lille","Strasbourg","Rennes","Montpellier","Nice","Grenoble","Toulon","Dijon","Angers","Reims","Rouen","Saint-Étienne","Douarnenez","Brest","Quimper","Rennes","Caen","Clermont-Ferrand","Orléans","Metz","Besançon","Nancy","Tours"],
+  be: ["Toutes villes","Bruxelles","Liège","Gand","Anvers","Charleroi","Mons","Namur","Bruges","Louvain"],
+  ch: ["Toutes villes","Zurich","Genève","Berne","Bâle","Lausanne","Lugano","Winterthour","St-Gall"],
+  ca: ["Toutes villes","Montréal","Toronto","Vancouver","Québec","Ottawa","Calgary","Edmonton","Winnipeg"],
+  ma: ["Toutes villes","Casablanca","Rabat","Marrakech","Fès","Tanger","Agadir","Meknès","Oujda"],
+  ci: ["Toutes villes","Abidjan","Yamoussoukro","Bouaké","Daloa","San-Pédro","Korhogo","Man","Divo"],
+  sn: ["Toutes villes","Dakar","Thiès","Kaolack","Ziguinchor","Saint-Louis","Rufisque","Diourbel"],
+  tn: ["Toutes villes","Tunis","Sfax","Sousse","Kairouan","Bizerte","Gabès","Ariana","Gafsa"],
+  de: ["Toutes villes","Berlin","Munich","Hambourg","Cologne","Francfort","Stuttgart","Düsseldorf","Leipzig"],
+  es: ["Toutes villes","Madrid","Barcelone","Valence","Séville","Saragosse","Málaga","Bilbao","Murcie"],
+  it: ["Toutes villes","Rome","Milan","Naples","Turin","Palerme","Gênes","Bologne","Florence"],
+  uk: ["Toutes villes","Londres","Birmingham","Manchester","Leeds","Glasgow","Liverpool","Bristol","Sheffield"]
+};
+
+// Domaines locaux (prennent l'extension du pays) vs domaines globaux (ont leur propre extension fixe)
+const DOMAINES_LOCAUX = {
+  fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf"],
+  be:  ["skynet","telenet","proximus"],
+  ch:  ["bluewin","swissmail"],
+  ca:  ["videotron","bell","rogers"],
+  ma:  ["menara","iam"],
+  ci:  ["aviso","orange"],
+  sn:  ["orange","expresso"],
+  tn:  ["topnet","gnet","hexabyte"],
+  de:  ["gmx","web","t-online","freenet"],
+  es:  ["telefonica","terra"],
+  it:  ["libero","virgilio","tiscali"],
+  uk:  ["btinternet","sky","virgin"]
+};
+
+// Domaines globaux avec leur vraie extension fixe
+const DOMAINES_GLOBAUX = [
+  { d:"gmail",     ext:".com" },
+  { d:"yahoo",     ext:".com" },
+  { d:"hotmail",   ext:".com" },
+  { d:"outlook",   ext:".com" },
+  { d:"live",      ext:".com" },
+  { d:"proton",    ext:".me"  },
+  { d:"icloud",    ext:".com" },
+  { d:"pm",        ext:".me"  },
+];
+
+const EXT_PAYS = {
+  fr:".fr", be:".be", ch:".ch", ca:".ca", ma:".ma", ci:".ci", sn:".sn", tn:".tn", de:".de", es:".es", it:".it", uk:".co.uk"
+};
+
+const PRENOMS = {
+  fr: ["abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdoullah","abel","achille","adam","adeline","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adelaide","agathe","aglae","agnes","ahmad","ahmed","aimery","aime","aimee","alain","alan","alban","albert","albertine","alberto","albin","albine","albino","alberic","aldo","alec","alessandra","alessandro","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aline","alison","alistair","allan","allen","alphonse","amanda","amandine","amar","amaury","ambroise","amel","amina","amelie","anais","andrea","andreas","andrew","andre","andree","ange","angel","angelina","angelo","angie","angele","angelique","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anthony","antoine","antoinette","antoni","antonio","antony","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arthur","arturo","astrid","aude","audebert","audrey","augusta","auguste","augustin","augusto","aurore","aurelia","aureliane","aurelie","aurelien","axel","axelle","aymar","aymeric","aicha","bahia","baptiste","barbara","bart","barthelemy","basile","bastien","baudoin","benaicha","benjamin","benjamine","benoit","bernadette","bernard","bernhard","bertrand","betty","bianca","bill","bjorn","blaise","blanche","blandine","boris","brahim","brian","brice","brigitte","bruce","bruno","beatrice","benedicte","berangere","berengere","cameron","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","catherine","cathie","cathy","cendrine","cerise","chantal","charles","charlie","charline","charlotte","charly","charlene","chiara","chloe","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christele","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotilde","clemence","clement","colette","colin","concepcion","constance","constant","constantin","coralie","corine","corinne","cynthia","cyprien","cyril","cyrille","cecil","cecile","cecilia","cedric","celia","celine","cesar","daisy","dalida","damien","dan","daniel","daniela","danielle","daniele","daphne","dario","darlene","darren","david","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonne","dimitri","diogo","djamel","djamila","dolores","domingos","dominique","donald","dorothy","dorothee","douglas","dounia","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","elena","eliane","elisabeth","elizabeth","eloise","elsa","elvire","eleonore","emily","emma","emmanuel","emmanuelle","enrico","enzo","eric","erick","erik","erika","ernest","ernst","erwan","erwann","erwin","estelle","esther","etiennette","eudes","eugenio","eugene","eugenie","evangeline","eve","eveline","evelyn","evelyne","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fanny","farid","faridah","fatiha","fatima","fatma","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","flavie","flavien","flavio","fleur","florence","florent","florian","floriane","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","francois","francoise","freddy","frederick","frederico","frederik","friedrich","fritz","frederic","frederique","felix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gary","gaspard","gaston","gael","gaelle","gaetan","genevieve","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","ghislain","ghislaine","gianfranco","gianni","gil","gilbert","gilberte","gildas","gilles","ginette","gino","giorgio","giovanni","giselle","gislain","gisele","giuseppe","gladys","gontrand","gonzague","gordon","gottfried","graham","grace","gregoire","gregor","gregory","guido","guillaume","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenael","gwenaelle","gwendoline","gerald","geraldine","gerard","geraud","habib","hans","harold","hassan","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermann","herve","honore","houria","hubert","hugues","huguette","helene","helena","ian","igor","ingrid","ines","irma","irene","isaac","isabel","isabelle","isidore","issam","ivan","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jamel","james","jamila","jan","jane","janine","jannick","jason","jean","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","jimmy","joachim","joanna","joao","joaquim","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jonas","jonathan","jorg","jorge","jorgen","joselaine","joseph","josephus","josette","josiane","jose","josee","josephine","jozef","joel","joelle","juan","judith","jules","julia","juliana","julie","julien","juliette","jurgen","justine","jeremie","jerome","jesus","kadyja","kamel","karen","karim","karima","karin","karina","karine","karl","katerine","kathleen","katia","katy","keith","kelly","kenneth","kenny","kevin","khaled","klaus","kristel","kurt","laetitia","lamia","lana","lars","laura","laure","laureline","laurence","laurent","lauretta","lauriane","laurie","lawrence","leila","lelia","leonardo","leslie","lia","lila","lilian","liliane","lina","linda","line","linette","lionel","lisa","lise","lorenzo","loriane","lorianne","lorraine","louis","louisa","louise","louisette","loic","luc","luca","lucas","lucette","lucia","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludovic","luigi","luis","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","lea","leo","leon","leonard","leone","leonie","leopold","macha","madeleine","madeline","madiha","magali","magalie","magaly","magdeleine","maggy","magnus","malcolm","malik","malika","manfred","manon","manuel","manuela","marc","marcel","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariana","marianna","marianne","marie","marielle","marieva","marilyn","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlene","marta","marthe","martial","martin","martine","martino","mary","marylaine","maryline","marylise","marylou","marylene","maryse","maryvonne","massimiliano","massimo","mathias","mathieu","mathilde","matthew","matthias","matthieu","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maya","maeva","maite","melinda","mercedes","messaoud","messaouda","michael","michel","micheline","michelle","michele","mickael","miguel","mikael","miloud","mireille","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mounia","mounir","mourad","moise","muguette","muriel","murielle","mustapha","mylene","myriam","myrna","melanie","melodie","nadia","nadine","nadege","nancy","nasser","natacha","natanael","nathalie","nathan","nathanael","nathaniel","neil","nelly","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","nina","nino","nissim","nolwenn","nora","norbert","nourdine","noemie","noel","noelle","octave","oceane","odette","odile","olga","oliver","olivia","olivier","olympia","omar","oriane","oscar","oswald","otto","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","pauline","paulo","pedro","peggy","perrine","peter","petrus","philip","philippe","philomene","pierre","pierrette","pierric","pierrick","pietro","prisca","quentin","rachel","rachid","rafael","raffael","raimondo","ralf","ralph","ramon","raoul","raphael","raphaelle","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","rene","renee","reynald","reza","riccardo","richard","rita","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigues","roger","roland","rolande","rolf","rolland","romain","romano","romuald","romeo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","rudi","rudolf","rudolph","rudy","regine","regis","remi","remy","renata","sabine","sabrina","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sandie","sandra","sandrine","sara","sarah","said","sebastian","serge","sergio","servane","shirley","simon","simone","slimane","soazig","sofia","solange","solene","sonia","sonya","sophia","sophie","soraya","souad","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stephan","stephane","stephanie","susan","suzanne","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sebastien","severine","tanguy","tania","tatiana","theodor","thibaud","thibault","thibaut","thierry","thomas","theodore","theophile","therese","tiffany","timothy","tito","tobias","tom","tommy","tony","tristan","ugo","ulrich","ulysse","umberto","valentine","valerie","valery","vanessa","vanina","vicente","victoire","victor","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vladimir","veronique","walter","warren","werner","wilfrid","wilfried","willem","william","willy","wladimir","wolfgang","xavier","yann","yannick","yasmina","yasmine","yael","yohan","yohann","yolande","yolene","youssef","yvan","yveline","yves","yvette","yvon","yvonne","zoubida","edith","eglantine","elie","elisa","elise","eliza","elodie","emeline","emile","emilia","emilie","etienne","eva","adele","albane","aliette","alix","alizee","ambre","amedee","angeline","antonin","arsene","aubin","auriane","barnabe","baudouin","berenice","bertin","benoite","chimene","clementine","corentin","donatien","dorian","doriane","eloi","emilien","evariste","flore","florentine","florine","garence","gautier","godefroy","heloise","hortense","jasmine","joanne","jocelyn","julienne","justin","lambert","laurette","leopoldine","marcelin","marin","mathis","maximilienne","megane","milene","ophelie","paulin","philippine","rejane","rodrigue","romane","segolene","sibylle","timothee","tiphaine","ursule","valentin","vivien","zacharie","zoe"],
+  be: ["axel","brice","celine","dominique","emile","francoise","gerard","hilde","isabelle","jan","koen","lien","marc","nathalie","olivier","patricia","quentin","roos","stefan","tine","ulrike","veerle","wout","xavier","yves","zoe"],
+  ch: ["alex","beat","carmen","daniel","eva","felix","gabi","hans","irene","jakob","kurt","lena","marco","nina","otto","petra","rolf","sarah","thomas","ursula","victor","walter","xenia","yves","zara"],
+  ca: ["alex","brigitte","charles","diane","etienne","francine","gabriel","helene","ivan","josee","kevin","lucie","marc","nadine","olivier","pascale","quentin","rachel","simon","therese","ulric","valerie","william","xavier","yvonne","zacharie"],
+  ma: ["amine","bilal","chaimae","driss","fatima","hamza","imane","jalil","kenza","leila","mehdi","nadia","omar","rachid","samir","tariq","widad","youssef","zineb","abdelali","bouchra","charaf","dounia"],
+  ci: ["adjoua","bamba","celestin","diallo","emile","fatoumata","gnagna","hyppolite","ines","jean","kofi","lamine","mamadou","nathalie","oumar","pierre","rahel","sekou","traore","urbain","valentin","waly","xavier","yves","zoe"],
+  sn: ["aissatou","boubacar","cheikh","dieynaba","elhadj","fatoumata","gorgui","hadja","ibrahima","jainaba","khady","lamine","mamadou","ndieye","oumar","pape","rokhaya","serigne","thierno","umu"],
+  tn: ["ahmed","bilel","chaima","dhia","emna","farouk","ghada","hamdi","imen","jamel","khaled","leila","mehdi","nesrine","omar","rahma","sami","tarek","wafa","youssef","zied"],
+  de: ["anna","bernd","claudia","dieter","elke","frank","gabi","hans","ingrid","juergen","karen","lukas","michael","nora","oliver","petra","ralf","sabine","thomas","ulrike","volker","walter","xaver","yvonne","zoe"],
+  es: ["alejandro","beatriz","carlos","diana","elena","francisco","gabriela","hector","ines","jorge","karla","luis","miguel","natalia","oscar","patricia","rafael","sofia","tomas","ursula","victor","wendy","xavier","yolanda","zara"],
+  it: ["alessio","beatrice","chiara","davide","elena","fabio","giovanni","ilaria","luca","marco","nicoletta","ottavia","paolo","roberta","simone","tiziana","umberto","valentina","william","xenia","yuri","zoe","andrea","benedetta"],
+  uk: ["alice","ben","charlie","diana","emily","frank","grace","henry","isabella","james","kate","liam","mia","noah","olivia","peter","quinn","rose","sam","tara","uma","victor","wendy","xander","yasmin","zoe"]
+};
+
+const NOMS = {
+  fr: ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin","masson"],
+  be: ["janssen","peeters","maes","jacobs","willems","claes","goossens","wouters","martens","smeets","dupont","simon","lambert","renard","leroy","piron","denis","thomas","adam","collignon"],
+  ch: ["mueller","meier","schmid","keller","weber","huber","schneider","zimmermann","steiner","moser","dubois","girard","favre","blanc","bonvin","roux","dupont","morel","jacot","perroux"],
+  ca: ["tremblay","gagnon","roy","cote","bouchard","gauthier","morin","lavoie","fortin","ouellet","pelletier","belanger","lepage","lefebvre","bergeron","girard","thibault","leblanc","paquin","simard"],
+  ma: ["alami","bennani","berrada","chraibi","daoudi","elhajj","fassi","ghali","hamdouch","idrissi","jaddi","kadiri","laraqi","mansouri","naji","ouali","rahmouni","skalli","tazi","zniber"],
+  ci: ["coulibaly","diallo","kone","traore","bamba","koné","doumbia","touré","sylla","konaté","yao","kouassi","bah","ouattara","diabaté","sidibé","dembélé","camara","kouyaté","bagayoko"],
+  sn: ["diop","fall","ndiaye","ba","mbaye","sow","sy","diagne","cisse","gueye","diouf","sarr","thiam","faye","ly","wade","gaye","diallo","ndour","toure"],
+  tn: ["ben ali","trabelsi","belhaj","chaabane","jlassi","khlifi","mansouri","nasri","ouali","rahmani","saidi","tlili","zghal","zouari","abidi","belhadj","cherni","dridi","ferchichi","hamdi"],
+  de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann"],
+  es: ["garcia","martinez","lopez","sanchez","gonzalez","perez","rodriguez","fernandez","moreno","jimenez","ruiz","hernandez","diaz","alvarez","romero","torres","navarro","dominguez","ramos","gil"],
+  it: ["rossi","russo","ferrari","esposito","bianchi","romano","colombo","ricci","marino","greco","bruno","gallo","conti","de luca","mancini","costa","giordano","rizzo","lombardi","barbieri"],
+  uk: ["smith","jones","williams","taylor","brown","davies","evans","wilson","thomas","roberts","johnson","white","martin","thompson","garcia","martinez","robinson","clark","rodriguez","lewis"]
+};
+
+const SECTEURS_DATA = {
+  all:       { label: "Général",           color: "#6366f1", bg: "#eef2ff" },
+  btp:       { label: "BTP",               color: "#d97706", bg: "#fffbeb" },
+  genie:     { label: "Génie Civil",       color: "#92400e", bg: "#fef3c7" },
+  immo:      { label: "Immobilier",        color: "#059669", bg: "#ecfdf5" },
+  auto:      { label: "Automobile",        color: "#dc2626", bg: "#fef2f2" },
+  sante:     { label: "Santé",             color: "#0891b2", bg: "#ecfeff" },
+  finance:   { label: "Finance",           color: "#2563eb", bg: "#eff6ff" },
+  tech:      { label: "Tech / IT",         color: "#7c3aed", bg: "#f5f3ff" },
+  industrie: { label: "Industrie",         color: "#64748b", bg: "#f8fafc" },
+  transport: { label: "Transport",         color: "#ea580c", bg: "#fff7ed" },
+  commerce:  { label: "Commerce",          color: "#db2777", bg: "#fdf2f8" },
+  juridique: { label: "Juridique",         color: "#475569", bg: "#f8fafc" },
+  education: { label: "Éducation",         color: "#16a34a", bg: "#f0fdf4" }
+};
+
+// Noms d'entreprise réalistes par secteur (pour varier les formats d'email)
+const ENTREPRISES = {
+  btp:       ["batipro","construtech","artisanbat","batigroupe","btpfrance","cbatiment","maconnerie"],
+  genie:     ["geotechnik","civiltech","routeplus","ponts-et-chaussees","terrassement","genieplus"],
+  immo:      ["agenceimmo","cabinet-immo","residence","patrimoine","foncier","immopro","agencepro"],
+  auto:      ["autoservice","garage","motorpro","carexpert","mecanique","autoplus","vente-auto"],
+  sante:     ["cabinetmedical","clinique","pharmacie","santepro","medecin","laboratoire","soins"],
+  finance:   ["conseils-finances","patrimoine","gestion-active","courtage","invest","assurance"],
+  tech:      ["techsolutions","digital","softpro","devagency","itservices","cloudtech","appdev"],
+  industrie: ["industriepro","usineplus","fabrication","production","metallurgie","atelier"],
+  transport: ["logistik","transport","livraison","fret","coursier","expeditions","movingpro"],
+  commerce:  ["boutique","distribution","grossiste","retail","import-export","commerce"],
+  juridique: ["cabinet-avocat","notaire","juridique","conseil-juridique","etude","barreau"],
+  education: ["formation","ecole","academie","centre-formation","apprentissage","elearning"]
+};
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let allEmails = [];
+let generated = new Set();
+let scanInterval = null;
+let scanCount = 0;
+let scanTarget = 0;
+let rateCountMin = 0;
+let rateInterval = null;
+
+// ══════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function now() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+}
+
+function toggleCustom() {
+  document.getElementById('customField').style.display =
+    document.getElementById('targetCount').value === 'custom' ? 'block' : 'none';
+}
+
+function updateVilles() {
+  const pays = document.getElementById('pays').value;
+  const villes = VILLES[pays] || ["Toutes villes"];
+  const sel = document.getElementById('ville');
+  sel.innerHTML = '';
+  villes.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v === 'Toutes villes' ? 'all' : v;
+    opt.textContent = v;
+    sel.appendChild(opt);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// GÉNÉRATION EMAIL — SYSTÈME COOLDOWN ANTI-RÉPÉTITION
+// ══════════════════════════════════════════════════════
+
+const COOLDOWN = 100; // nb emails avant réutilisation d'un même prénom/nom/chiffre-pattern
+
+// Files de cooldown : stocke les N derniers utilisés
+const cooldownPrenom = [];
+const cooldownNom    = [];
+const cooldownSuffix = []; // on stocke la "catégorie" du suffix, pas la valeur exacte
+
+// Variantes d'accents → slug
+function slugify(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/gi,'').toLowerCase();
+}
+
+function sep() { return rand(['.','-','_','']); }
+
+// Pioche un élément en respectant le cooldown
+function pickWithCooldown(pool, cooldownQueue) {
+  // Filtrer les items en cooldown
+  const available = pool.filter(item => !cooldownQueue.includes(item));
+  // Si tout est en cooldown (liste très courte), on prend quand même le plus ancien utilisé
+  const chosen = available.length > 0 ? rand(available) : cooldownQueue[0];
+  // Enregistrer dans la file et tronquer
+  cooldownQueue.push(chosen);
+  if (cooldownQueue.length > COOLDOWN) cooldownQueue.shift();
+  return chosen;
+}
+
+// Catégories de suffix pour le cooldown (évite d'avoir 3 "75" de suite)
+const SUFFIX_CATEGORIES = [
+  { key: 'none',   weight: 42, gen: () => '' },
+  { key: '1digit', weight: 15, gen: () => String(randInt(1, 9)) },
+  { key: '2digit', weight: 11, gen: () => String(randInt(10, 99)) },
+  { key: '3digit', weight:  8, gen: () => String(randInt(100, 999)) },
+  { key: 'year70', weight:  7, gen: () => String(randInt(1970, 1999)) },
+  { key: 'year00', weight:  5, gen: () => String(randInt(2000, 2010)) },
+  { key: 'word',   weight:  4, gen: () => rand(['pro','perso','contact','work','mail','new','cv','old']) },
+  { key: '4digit', weight:  8, gen: () => String(randInt(1000, 9999)) },
+];
+
+// Tirage pondéré avec cooldown sur la catégorie
+function buildSuffix() {
+  // Construire pool pondéré de catégories disponibles (hors cooldown)
+  const available = SUFFIX_CATEGORIES.filter(c => !cooldownSuffix.includes(c.key));
+  const pool = available.length > 0 ? available : SUFFIX_CATEGORIES;
+  // Tirage pondéré
+  const totalWeight = pool.reduce((s, c) => s + c.weight, 0);
+  let r = Math.random() * totalWeight;
+  let chosen = pool[pool.length - 1];
+  for (const cat of pool) { r -= cat.weight; if (r <= 0) { chosen = cat; break; } }
+  // Cooldown sur la catégorie
+  cooldownSuffix.push(chosen.key);
+  if (cooldownSuffix.length > 6) cooldownSuffix.shift(); // cooldown court sur catégories (6 au lieu de 100)
+  return chosen.gen();
+}
+
+function buildLocal(p, n) {
+  const ps = slugify(p);
+  const ns = slugify(n);
+  const pi = ps[0];
+  const ni = ns[0];
+
+  const formats = [
+    () => `${ps}.${ns}`,
+    () => `${ps}${ns}`,
+    () => `${pi}.${ns}`,
+    () => `${pi}${ns}`,
+    () => `${ns}.${ps}`,
+    () => `${ns}${ps}`,
+    () => `${ps}_${ns}`,
+    () => `${ns}_${ps}`,
+    () => `${ps}-${ns}`,
+    () => `${ps}.${ni}`,
+    () => `${ps}`,
+    () => `${ns}`,
+    () => `${ps}${sep()}${ns}`,
+    () => `${pi}${sep()}${ns}`,
+  ];
+
+  return rand(formats)();
+}
+
+function resetCooldowns() {
+  cooldownPrenom.length = 0;
+  cooldownNom.length    = 0;
+  cooldownSuffix.length = 0;
+}
+
+function buildEmail(pays, secteur, ville) {
+  const prenomsList = PRENOMS[pays] || PRENOMS.fr;
+  const nomsList    = NOMS[pays]    || NOMS.fr;
+  const locaux      = DOMAINES_LOCAUX[pays] || [];
+  const extPays     = EXT_PAYS[pays] || '.fr';
+
+  // Pioche avec cooldown anti-répétition
+  const p = pickWithCooldown(prenomsList, cooldownPrenom);
+  const n = pickWithCooldown(nomsList,    cooldownNom);
+
+  let local = buildLocal(p, n) + buildSuffix();
+
+  // Nettoyage
+  local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
+  if (!local) local = slugify(p) + slugify(n);
+
+  // ~20% email pro avec domaine entreprise du secteur
+  if (secteur !== 'all' && Math.random() < 0.20) {
+    const entList = ENTREPRISES[secteur];
+    if (entList) {
+      const ent = rand(entList);
+      const villeSlug = (ville && ville !== 'all')
+        ? rand(['','-'+slugify(ville),'-'+slugify(ville)])
+        : '';
+      return `${local}@${ent}${villeSlug}${extPays}`;
     }
-    function doLogout() {
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('appScreen').style.display = 'none';
-      document.getElementById('loginUser').value = '';
-      document.getElementById('loginPass').value = '';
-      clearAll();
+  }
+
+  // ~45% domaine local (extension pays), ~55% domaine global (extension fixe)
+  const useLocal = locaux.length > 0 && Math.random() < 0.45;
+  if (useLocal) {
+    const d = rand(locaux);
+    return `${local}@${d}${extPays}`;
+  } else {
+    const g = rand(DOMAINES_GLOBAUX);
+    return `${local}@${g.d}${g.ext}`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SCAN
+// ══════════════════════════════════════════════════════
+function startScan() {
+  if (scanInterval) return;
+
+  const pays    = document.getElementById('pays').value;
+  const secteur = document.getElementById('secteur').value;
+  const ville   = document.getElementById('ville').value;
+  const sel     = document.getElementById('targetCount').value;
+  scanTarget    = sel === 'custom' ? (parseInt(document.getElementById('customCount').value) || 500) : parseInt(sel);
+
+  scanCount = 0;
+  resetCooldowns();
+
+  // UI scan actif
+  const dot   = document.getElementById('scanDot');
+  const label = document.getElementById('scanLabel');
+  const tgt   = document.getElementById('scanTarget');
+  const bar   = document.getElementById('progressBar');
+
+  dot.classList.add('active');
+  label.textContent = 'Scan en cours...';
+  const paysName = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text;
+  const secteurName = document.getElementById('secteur').options[document.getElementById('secteur').selectedIndex].text;
+  tgt.textContent = `${secteurName} · ${paysName} · cible : ${scanTarget.toLocaleString('fr')}`;
+  bar.classList.add('animated');
+  bar.style.width = '0%';
+
+  // Rate / min
+  rateInterval = setInterval(() => {
+    document.getElementById('statRate').textContent = (rateCountMin * 6).toLocaleString('fr'); // extrapolé /min
+    rateCountMin = 0;
+  }, 10000);
+
+  const tbody   = document.getElementById('tbody');
+  const dedup   = true;
+
+  // 1 email toutes les 2 secondes → ~5 emails / 10 secondes, effet naturel
+  scanInterval = setInterval(() => {
+    if (scanCount >= scanTarget) { stopScan(); return; }
+
+    let email = null;
+    let tries = 0;
+    while (!email && tries < 20) {
+      tries++;
+      const candidate = buildEmail(pays, secteur, ville);
+      if (!dedup || !generated.has(candidate)) { email = candidate; }
     }
+    if (!email) return;
 
-    // DATA (Côte d'Ivoire entièrement retirée)
-    const VILLES = {
-      fr: ["Toutes villes","Paris","Lyon","Marseille","Toulouse","Bordeaux","Nantes","Lille","Strasbourg","Rennes","Montpellier","Nice","Grenoble","Toulon","Dijon","Angers","Reims","Rouen","Saint-Étienne","Douarnenez","Brest","Quimper","Rennes","Caen","Clermont-Ferrand","Orléans","Metz","Besançon","Nancy","Tours"],
-      be: ["Toutes villes","Bruxelles","Liège","Gand","Anvers","Charleroi","Mons","Namur","Bruges","Louvain"],
-      ch: ["Toutes villes","Zurich","Genève","Berne","Bâle","Lausanne","Lugano","Winterthour","St-Gall"],
-      ca: ["Toutes villes","Montréal","Toronto","Vancouver","Québec","Ottawa","Calgary","Edmonton","Winnipeg"],
-      ma: ["Toutes villes","Casablanca","Rabat","Marrakech","Fès","Tanger","Agadir","Meknès","Oujda"],
-      sn: ["Toutes villes","Dakar","Thiès","Kaolack","Ziguinchor","Saint-Louis","Rufisque","Diourbel"],
-      tn: ["Toutes villes","Tunis","Sfax","Sousse","Kairouan","Bizerte","Gabès","Ariana","Gafsa"],
-      de: ["Toutes villes","Berlin","Munich","Hambourg","Cologne","Francfort","Stuttgart","Düsseldorf","Leipzig"],
-      es: ["Toutes villes","Madrid","Barcelone","Valence","Séville","Saragosse","Málaga","Bilbao","Murcie"],
-      it: ["Toutes villes","Rome","Milan","Naples","Turin","Palerme","Gênes","Bologne","Florence"],
-      uk: ["Toutes villes","Londres","Birmingham","Manchester","Leeds","Glasgow","Liverpool","Bristol","Sheffield"]
-    };
+    generated.add(email);
+    allEmails.push({ email, secteur, pays, ville: ville === 'all' ? '—' : ville, time: now() });
+    scanCount++;
+    rateCountMin++;
 
-    const DOMAINES_LOCAUX = {
-      fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf"],
-      be:  ["skynet","telenet","proximus"],
-      ch:  ["bluewin","swissmail"],
-      ca:  ["videotron","bell","rogers"],
-      ma:  ["menara","iam"],
-      sn:  ["orange","expresso"],
-      tn:  ["topnet","gnet","hexabyte"],
-      de:  ["gmx","web","t-online","freenet"],
-      es:  ["telefonica","terra"],
-      it:  ["libero","virgilio","tiscali"],
-      uk:  ["btinternet","sky","virgin"]
-    };
+    // ROW
+    const sData = SECTEURS_DATA[secteur] || SECTEURS_DATA.all;
+    const paysFlag = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text.split(' ')[0];
 
-    const DOMAINES_GLOBAUX = [
-      { d:"gmail",     ext:".com" },
-      { d:"yahoo",     ext:".com" },
-      { d:"hotmail",   ext:".com" },
-      { d:"outlook",   ext:".com" },
-      { d:"live",      ext:".com" },
-      { d:"proton",    ext:".me"  },
-      { d:"icloud",    ext:".com" },
-      { d:"pm",        ext:".me"  },
-    ];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--gray-400);font-size:0.7rem;font-family:'JetBrains Mono',monospace">${allEmails.length}</td>
+      <td class="td-email">${email}</td>
+      <td><span class="badge-secteur" style="color:${sData.color};background:${sData.bg}">${sData.label}</span></td>
+      <td class="td-pays">${paysFlag}</td>
+      <td class="td-ville">${ville === 'all' ? '—' : ville}</td>
+      <td class="td-time">${now()}</td>
+    `;
+    tbody.insertBefore(tr, tbody.firstChild);
 
-    const EXT_PAYS = {
-      fr:".fr", be:".be", ch:".ch", ca:".ca", ma:".ma", sn:".sn", tn:".tn", de:".de", es:".es", it:".it", uk:".co.uk"
-    };
+    // Limiter DOM
+    while (tbody.children.length > 300) tbody.removeChild(tbody.lastChild);
 
-    const PRENOMS = {
-      fr: ["abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdoullah","abel","achille","adam","adeline","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adelaide","agathe","aglae","agnes","ahmad","ahmed","aimery","aime","aimee","alain","alan","alban","albert","albertine","alberto","albin","albine","albino","alberic","aldo","alec","alessandra","alessandro","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aline","alison","alistair","allan","allen","alphonse","amanda","amandine","amar","amaury","ambroise","amel","amina","amelie","anais","andrea","andreas","andrew","andre","andree","ange","angel","angelina","angelo","angie","angele","angelique","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anthony","antoine","antoinette","antoni","antonio","antony","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arthur","arturo","astrid","aude","audebert","audrey","augusta","auguste","augustin","augusto","aurore","aurelia","aureliane","aurelie","aurelien","axel","axelle","aymar","aymeric","aicha","bahia","baptiste","barbara","bart","barthelemy","basile","bastien","baudoin","benaicha","benjamin","benjamine","benoit","bernadette","bernard","bernhard","bertrand","betty","bianca","bill","bjorn","blaise","blanche","blandine","boris","brahim","brian","brice","brigitte","bruce","bruno","beatrice","benedicte","berangere","berengere","cameron","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","catherine","cathie","cathy","cendrine","cerise","chantal","charles","charlie","charline","charlotte","charly","charlene","chiara","chloe","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christele","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotilde","clemence","clement","colette","colin","concepcion","constance","constant","constantin","coralie","corine","corinne","cynthia","cyprien","cyril","cyrille","cecil","cecile","cecilia","cedric","celia","celine","cesar","daisy","dalida","damien","dan","daniel","daniela","danielle","daniele","daphne","dario","darlene","darren","david","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonne","dimitri","diogo","djamel","djamila","dolores","domingos","dominique","donald","dorothy","dorothee","douglas","dounia","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","elena","eliane","elisabeth","elizabeth","eloise","elsa","elvire","eleonore","emily","emma","emmanuel","emmanuelle","enrico","enzo","eric","erick","erik","erika","ernest","ernst","erwan","erwann","erwin","estelle","esther","etiennette","eudes","eugenio","eugene","eugenie","evangeline","eve","eveline","evelyn","evelyne","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fanny","farid","faridah","fatiha","fatima","fatma","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","flavie","flavien","flavio","fleur","florence","florent","florian","floriane","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","francois","francoise","freddy","frederick","frederico","frederik","friedrich","fritz","frederic","frederique","felix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gary","gaspard","gaston","gael","gaelle","gaetan","genevieve","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","ghislain","ghislaine","gianfranco","gianni","gil","gilbert","gilberte","gildas","gilles","ginette","gino","giorgio","giovanni","giselle","gislain","gisele","giuseppe","gladys","gontrand","gonzague","gordon","gottfried","graham","grace","gregoire","gregor","gregory","guido","guillaume","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenael","gwenaelle","gwendoline","gerald","geraldine","gerard","geraud","habib","hans","harold","hassan","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermann","herve","honore","houria","hubert","hugues","huguette","helene","helena","ian","igor","ingrid","ines","irma","irene","isaac","isabel","isabelle","isidore","issam","ivan","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jamel","james","jamila","jan","jane","janine","jannick","jason","jean","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","jimmy","joachim","joanna","joao","joaquim","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jonas","jonathan","jorg","jorge","jorgen","joselaine","joseph","josephus","josette","josiane","jose","josee","josephine","jozef","joel","joelle","juan","judith","jules","julia","juliana","julie","julien","juliette","jurgen","justine","jeremie","jerome","jesus","kadyja","kamel","karen","karim","karima","karin","karina","karine","karl","katerine","kathleen","katia","katy","keith","kelly","kenneth","kenny","kevin","khaled","klaus","kristel","kurt","laetitia","lamia","lana","lars","laura","laure","laureline","laurence","laurent","lauretta","lauriane","laurie","lawrence","leila","lelia","leonardo","leslie","lia","lila","lilian","liliane","lina","linda","line","linette","lionel","lisa","lise","lorenzo","loriane","lorianne","lorraine","louis","louisa","louise","louisette","loic","luc","luca","lucas","lucette","lucia","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludovic","luigi","luis","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","lea","leo","leon","leonard","leone","leonie","leopold","macha","madeleine","madeline","madiha","magali","magalie","magaly","magdeleine","maggy","magnus","malcolm","malik","malika","manfred","manon","manuel","manuela","marc","marcel","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariana","marianna","marianne","marie","marielle","marieva","marilyn","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlene","marta","marthe","martial","martin","martine","martino","mary","marylaine","maryline","marylise","marylou","marylene","maryse","maryvonne","massimiliano","massimo","mathias","mathieu","mathilde","matthew","matthias","matthieu","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maya","maeva","maite","melinda","mercedes","messaoud","messaouda","michael","michel","micheline","michelle","michele","mickael","miguel","mikael","miloud","mireille","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mounia","mounir","mourad","moise","muguette","muriel","murielle","mustapha","mylene","myriam","myrna","melanie","melodie","nadia","nadine","nadege","nancy","nasser","natacha","natanael","nathalie","nathan","nathanael","nathaniel","neil","nelly","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","nina","nino","nissim","nolwenn","nora","norbert","nourdine","noemie","noel","noelle","octave","oceane","odette","odile","olga","oliver","olivia","olivier","olympia","omar","oriane","oscar","oswald","otto","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","pauline","paulo","pedro","peggy","perrine","peter","petrus","philip","philippe","philomene","pierre","pierrette","pierric","pierrick","pietro","prisca","quentin","rachel","rachid","rafael","raffael","raimondo","ralf","ralph","ramon","raoul","raphael","raphaelle","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","rene","renee","reynald","reza","riccardo","richard","rita","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigues","roger","roland","rolande","rolf","rolland","romain","romano","romuald","romeo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","rudi","rudolf","rudolph","rudy","regine","regis","remi","remy","renata","sabine","sabrina","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sandie","sandra","sandrine","sara","sarah","said","sebastian","serge","sergio","servane","shirley","simon","simone","slimane","soazig","sofia","solange","solene","sonia","sonya","sophia","sophie","soraya","souad","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stephan","stephane","stephanie","susan","suzanne","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sebastien","severine","tanguy","tania","tatiana","theodor","thibaud","thibault","thibaut","thierry","thomas","theodore","theophile","therese","tiffany","timothy","tito","tobias","tom","tommy","tony","tristan","ugo","ulrich","ulysse","umberto","valentine","valerie","valery","vanessa","vanina","vicente","victoire","victor","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vladimir","veronique","walter","warren","werner","wilfrid","wilfried","willem","william","willy","wladimir","wolfgang","xavier","yann","yannick","yasmina","yasmine","yael","yohan","yohann","yolande","yolene","youssef","yvan","yveline","yves","yvette","yvon","yvonne","zoubida","edith","eglantine","elie","elisa","elise","eliza","elodie","emeline","emile","emilia","emilie","etienne","eva","adele","albane","aliette","alix","alizee","ambre","amedee","angeline","antonin","arsene","aubin","auriane","barnabe","baudouin","berenice","bertin","benoite","chimene","clementine","corentin","donatien","dorian","doriane","eloi","emilien","evariste","flore","florentine","florine","garence","gautier","godefroy","heloise","hortense","jasmine","joanne","jocelyn","julienne","justin","lambert","laurette","leopoldine","marcelin","marin","mathis","maximilienne","megane","milene","ophelie","paulin","philippine","rejane","rodrigue","romane","segolene","sibylle","timothee","tiphaine","ursule","valentin","vivien","zacharie","zoe"],
-      be: ["axel","brice","celine","dominique","emile","francoise","gerard","hilde","isabelle","jan","koen","lien","marc","nathalie","olivier","patricia","quentin","roos","stefan","tine","ulrike","veerle","wout","xavier","yves","zoe"],
-      ch: ["alex","beat","carmen","daniel","eva","felix","gabi","hans","irene","jakob","kurt","lena","marco","nina","otto","petra","rolf","sarah","thomas","ursula","victor","walter","xenia","yves","zara"],
-      ca: ["alex","brigitte","charles","diane","etienne","francine","gabriel","helene","ivan","josee","kevin","lucie","marc","nadine","olivier","pascale","quentin","rachel","simon","therese","ulric","valerie","william","xavier","yvonne","zacharie"],
-      ma: ["amine","bilal","chaimae","driss","fatima","hamza","imane","jalil","kenza","leila","mehdi","nadia","omar","rachid","samir","tariq","widad","youssef","zineb","abdelali","bouchra","charaf","dounia"],
-      sn: ["aissatou","boubacar","cheikh","dieynaba","elhadj","fatoumata","gorgui","hadja","ibrahima","jainaba","khady","lamine","mamadou","ndieye","oumar","pape","rokhaya","serigne","thierno","umu"],
-      tn: ["ahmed","bilel","chaima","dhia","emna","farouk","ghada","hamdi","imen","jamel","khaled","leila","mehdi","nesrine","omar","rahma","sami","tarek","wafa","youssef","zied"],
-      de: ["anna","bernd","claudia","dieter","elke","frank","gabi","hans","ingrid","juergen","karen","lukas","michael","nora","oliver","petra","ralf","sabine","thomas","ulrike","volker","walter","xaver","yvonne","zoe"],
-      es: ["alejandro","beatriz","carlos","diana","elena","francisco","gabriela","hector","ines","jorge","karla","luis","miguel","natalia","oscar","patricia","rafael","sofia","tomas","ursula","victor","wendy","xavier","yolanda","zara"],
-      it: ["alessio","beatrice","chiara","davide","elena","fabio","giovanni","ilaria","luca","marco","nicoletta","ottavia","paolo","roberta","simone","tiziana","umberto","valentina","william","xenia","yuri","zoe","andrea","benedetta"],
-      uk: ["alice","ben","charlie","diana","emily","frank","grace","henry","isabella","james","kate","liam","mia","noah","olivia","peter","quinn","rose","sam","tara","uma","victor","wendy","xander","yasmin","zoe"]
-    };
+    // Stats
+    document.getElementById('statTotal').textContent = allEmails.length.toLocaleString('fr');
+    document.getElementById('statUniq').textContent  = generated.size.toLocaleString('fr');
+    document.getElementById('resultsCount').textContent = `${allEmails.length.toLocaleString('fr')} email(s)`;
 
-    const NOMS = {
-      fr: ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin","masson"],
-      be: ["janssen","peeters","maes","jacobs","willems","claes","goossens","wouters","martens","smeets","dupont","simon","lambert","renard","leroy","piron","denis","thomas","adam","collignon"],
-      ch: ["mueller","meier","schmid","keller","weber","huber","schneider","zimmermann","steiner","moser","dubois","girard","favre","blanc","bonvin","roux","dupont","morel","jacot","perroux"],
-      ca: ["tremblay","gagnon","roy","cote","bouchard","gauthier","morin","lavoie","fortin","ouellet","pelletier","belanger","lepage","lefebvre","bergeron","girard","thibault","leblanc","paquin","simard"],
-      ma: ["alami","bennani","berrada","chraibi","daoudi","elhajj","fassi","ghali","hamdouch","idrissi","jaddi","kadiri","laraqi","mansouri","naji","ouali","rahmouni","skalli","tazi","zniber"],
-      sn: ["diop","fall","ndiaye","ba","mbaye","sow","sy","diagne","cisse","gueye","diouf","sarr","thiam","faye","ly","wade","gaye","diallo","ndour","toure"],
-      tn: ["ben ali","trabelsi","belhaj","chaabane","jlassi","khlifi","mansouri","nasri","ouali","rahmani","saidi","tlili","zghal","zouari","abidi","belhadj","cherni","dridi","ferchichi","hamdi"],
-      de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann"],
-      es: ["garcia","martinez","lopez","sanchez","gonzalez","perez","rodriguez","fernandez","moreno","jimenez","ruiz","hernandez","diaz","alvarez","romero","torres","navarro","dominguez","ramos","gil"],
-      it: ["rossi","russo","ferrari","esposito","bianchi","romano","colombo","ricci","marino","greco","bruno","gallo","conti","de luca","mancini","costa","giordano","rizzo","lombardi","barbieri"],
-      uk: ["smith","jones","williams","taylor","brown","davies","evans","wilson","thomas","roberts","johnson","white","martin","thompson","garcia","martinez","robinson","clark","rodriguez","lewis"]
-    };
+    // Progress
+    const pct = Math.min(100, Math.round((scanCount / scanTarget) * 100));
+    bar.classList.remove('animated');
+    bar.style.width = pct + '%';
 
-    const SECTEURS_DATA = {
-      all:       { label: "Général",           color: "#6366f1", bg: "#eef2ff" },
-      btp:       { label: "BTP",               color: "#d97706", bg: "#fffbeb" },
-      genie:     { label: "Génie Civil",       color: "#92400e", bg: "#fef3c7" },
-      immo:      { label: "Immobilier",        color: "#059669", bg: "#ecfdf5" },
-      auto:      { label: "Automobile",        color: "#dc2626", bg: "#fef2f2" },
-      sante:     { label: "Santé",             color: "#0891b2", bg: "#ecfeff" },
-      finance:   { label: "Finance",           color: "#2563eb", bg: "#eff6ff" },
-      tech:      { label: "Tech / IT",         color: "#7c3aed", bg: "#f5f3ff" },
-      industrie: { label: "Industrie",         color: "#64748b", bg: "#f8fafc" },
-      transport: { label: "Transport",         color: "#ea580c", bg: "#fff7ed" },
-      commerce:  { label: "Commerce",          color: "#db2777", bg: "#fdf2f8" },
-      juridique: { label: "Juridique",         color: "#475569", bg: "#f8fafc" },
-      education: { label: "Éducation",         color: "#16a34a", bg: "#f0fdf4" }
-    };
+  }, 2000); // 1 email toutes les 2 secondes
+}
 
-    const B2B_PREFIXES = {
-      all:       ["global","inter","apex","core","alliance","prime","alpha"],
-      btp:       ["bat","construct","build","artisan","structur","renov"],
-      genie:     ["geo","civil","infra","terras","route","ponts"],
-      immo:      ["agence","cabinet","foncier","patrimoine","residence","immo"],
-      auto:      ["garage","motor","car","auto","meca","drive"],
-      sante:     ["medical","clinique","pharma","soins","sante","labo"],
-      finance:   ["finance","invest","courtage","assurance","fidu","capital"],
-      tech:      ["tech","soft","digital","cloud","app","data","net","cyber"],
-      industrie: ["indus","fab","manufactur","metal","prod","atelier"],
-      transport: ["logistik","trans","fret","delivery","fret","express"],
-      commerce:  ["retail","shop","negoce","import","export","grossiste"],
-      juridique: ["avocat","notaire","juridix","lex","barreau","conseils"],
-      education: ["edu","ecole","academy","formation","learn","e-stud"]
-    };
+function stopScan() {
+  clearInterval(scanInterval);
+  clearInterval(rateInterval);
+  scanInterval = null;
+  rateInterval = null;
+  rateCountMin = 0;
 
-    const B2B_SUFFIXES = ["groupe","solutions","services","expert","holding","international","plus","pro","systemes","partners"];
+  document.getElementById('scanDot').classList.remove('active');
+  document.getElementById('scanLabel').textContent = scanCount >= scanTarget ? 'Scan terminé' : 'Arrêté';
+  document.getElementById('progressBar').classList.remove('animated');
+  if (scanCount >= scanTarget) document.getElementById('progressBar').style.width = '100%';
+}
 
-    // STATE
-    let allEmails = [];
-    let generated = new Set();
-    let scanInterval = null;
-    let scanCount = 0;
-    let scanTarget = 0;
-    let rateCountMin = 0;
-    let rateInterval = null;
+function clearAll() {
+  stopScan();
+  resetCooldowns();
+  allEmails = [];
+  generated = new Set();
+  scanCount = 0;
+  document.getElementById('tbody').innerHTML = '';
+  ['statTotal','statUniq','statRate'].forEach(id => document.getElementById(id).textContent = '0');
+  document.getElementById('resultsCount').textContent = '0 email(s)';
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('scanLabel').textContent = 'En attente';
+  document.getElementById('scanTarget').textContent = '—';
+}
 
-    // UTILS
-    function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    function now() {
-      const d = new Date();
-      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-    }
+// ══════════════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════════════
+function copyAll() {
+  if (!allEmails.length) return;
+  navigator.clipboard.writeText(allEmails.map(r => r.email).join('\n'))
+    .then(() => alert(`✅ ${allEmails.length.toLocaleString('fr')} emails copiés !`));
+}
 
-    function toggleCustom() {
-      document.getElementById('customField').style.display =
-        document.getElementById('targetCount').value === 'custom' ? 'block' : 'none';
-    }
+function downloadCSV() {
+  if (!allEmails.length) return;
+  const header = 'email,secteur,pays,ville,heure_detection\n';
+  const rows   = allEmails.map(r => `${r.email},${SECTEURS_DATA[r.secteur]?.label||r.secteur},${r.pays},${r.ville},${r.time}`).join('\n');
+  dl(new Blob([header + rows], { type: 'text/csv;charset=utf-8' }), 'email_finder_export.csv');
+}
 
-    function updateVilles() {
-      const pays = document.getElementById('pays').value;
-      const villes = VILLES[pays] || ["Toutes villes"];
-      const sel = document.getElementById('ville');
-      sel.innerHTML = '';
-      villes.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v === 'Toutes villes' ? 'all' : v;
-        opt.textContent = v;
-        sel.appendChild(opt);
-      });
-    }
+function downloadTxt() {
+  if (!allEmails.length) return;
+  dl(new Blob([allEmails.map(r => r.email).join('\n')], { type: 'text/plain' }), 'email_finder_export.txt');
+}
 
-    // COOLDOWN STABLE DE 300 MAILS
-    const COOLDOWN = 300;
-
-    const cooldownPrenom = [];
-    const cooldownNom    = [];
-    const cooldownSuffix = [];
-    const cooldownEntreprise = [];
-
-    function slugify(str) {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/gi,'').toLowerCase();
-    }
-
-    function sep() { return rand(['.','-','_','']); }
-
-    function pickWithCooldown(pool, cooldownQueue) {
-      const available = pool.filter(item => !cooldownQueue.includes(item));
-      const chosen = available.length > 0 ? rand(available) : cooldownQueue[0];
-      
-      cooldownQueue.push(chosen);
-      if (cooldownQueue.length > COOLDOWN) cooldownQueue.shift();
-      return chosen;
-    }
-
-    const SUFFIX_CATEGORIES = [
-      { key: 'none',   weight: 35, gen: () => '' },
-      { key: '2digit', weight: 20, gen: () => String(randInt(10, 99)) },
-      { key: '3digit', weight: 15, gen: () => String(randInt(100, 999)) },
-      { key: 'year',   weight: 15, gen: () => String(randInt(1970, 2008)) },
-      { key: 'word',   weight: 15, gen: () => rand(['pro','perso','contact','work','mail','office','direct']) }
-    ];
-
-    function buildSuffix() {
-      const available = SUFFIX_CATEGORIES.filter(c => !cooldownSuffix.includes(c.key));
-      const pool = available.length > 0 ? available : SUFFIX_CATEGORIES;
-      
-      const totalWeight = pool.reduce((s, c) => s + c.weight, 0);
-      let r = Math.random() * totalWeight;
-      let chosen = pool[pool.length - 1];
-      for (const cat of pool) { r -= cat.weight; if (r <= 0) { chosen = cat; break; } }
-      
-      cooldownSuffix.push(chosen.key);
-      if (cooldownSuffix.length > 15) cooldownSuffix.shift(); 
-      return chosen.gen();
-    }
-
-    function buildLocal(p, n) {
-      const ps = slugify(p);
-      const ns = slugify(n);
-      const pi = ps[0];
-      const ni = ns[0];
-
-      const formats = [
-        () => `${ps}.${ns}`,
-        () => `${ps}${ns}`,
-        () => `${pi}.${ns}`,
-        () => `${pi}${ns}`,
-        () => `${ns}.${ps}`,
-        () => `${ns}${ps}`,
-        () => `${ps}_${ns}`,
-        () => `${ns}_${ps}`,
-        () => `${ps}-${ns}`,
-        () => `${ps}.${ni}`,
-        () => `${ps}${sep()}${ns}`,
-        () => `${pi}${sep()}${ns}`,
-      ];
-
-      return rand(formats)();
-    }
-
-    function generateUniqueCompany(secteur, ville, extPays) {
-      const prefixes = B2B_PREFIXES[secteur] || B2B_PREFIXES.all;
-      const suffix = rand(B2B_SUFFIXES);
-      
-      let companyName = "";
-      let attempt = 0;
-      
-      while (attempt < 50) {
-        const pref = rand(prefixes);
-        const useVille = (ville && ville !== 'all' && Math.random() < 0.40);
-        const geo = useVille ? '-' + slugify(ville) : '';
-        
-        companyName = `${pref}-${suffix}${geo}`;
-        if (!cooldownEntreprise.includes(companyName)) {
-          break;
-        }
-        attempt++;
-      }
-      
-      cooldownEntreprise.push(companyName);
-      if (cooldownEntreprise.length > COOLDOWN) cooldownEntreprise.shift();
-      
-      return `${companyName}${extPays}`;
-    }
-
-    function resetCooldowns() {
-      cooldownPrenom.length = 0;
-      cooldownNom.length = 0;
-      cooldownSuffix.length = 0;
-      cooldownEntreprise.length = 0;
-    }
-
-    function buildEmail(pays, secteur, ville) {
-      const prenomsList = PRENOMS[pays] || PRENOMS.fr;
-      const nomsList    = NOMS[pays]    || NOMS.fr;
-      const locaux      = DOMAINES_LOCAUX[pays] || [];
-      const extPays     = EXT_PAYS[pays] || '.fr';
-
-      const p = pickWithCooldown(prenomsList, cooldownPrenom);
-      const n = pickWithCooldown(nomsList,    cooldownNom);
-      let local = buildLocal(p, n) + buildSuffix();
-
-      local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
-      if (!local) local = slugify(p) + slugify(n);
-
-      if (Math.random() < 0.35) {
-        const targetSecteur = secteur === 'all' ? rand(Object.keys(B2B_PREFIXES)) : secteur;
-        const companyDomain = generateUniqueCompany(targetSecteur, ville, extPays);
-        return `${rand(['contact','info','direction','commercial',local])}@${companyDomain}`;
-      }
-
-      const useLocal = locaux.length > 0 && Math.random() < 0.54;
-      if (useLocal) {
-        return `${local}@${rand(locaux)}${extPays}`;
-      } else {
-        const g = rand(DOMAINES_GLOBAUX);
-        return `${local}@${g.d}${g.ext}`;
-      }
-    }
-
-    // CADENCE 1000 MAILS / 30 MIN (1.8s)
-    function startScan() {
-      if (scanInterval) return;
-
-      const pays    = document.getElementById('pays').value;
-      const secteur = document.getElementById('secteur').value;
-      const ville   = document.getElementById('ville').value;
-      const sel     = document.getElementById('targetCount').value;
-      scanTarget    = sel === 'custom' ? (parseInt(document.getElementById('customCount').value) || 500) : parseInt(sel);
-
-      scanCount = 0;
-      resetCooldowns();
-
-      const dot   = document.getElementById('scanDot');
-      const label = document.getElementById('scanLabel');
-      const tgt   = document.getElementById('scanTarget');
-      const bar   = document.getElementById('progressBar');
-
-      dot.classList.add('active');
-      label.textContent = 'Scan en cours...';
-      const paysName = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text;
-      const secteurName = document.getElementById('secteur').options[document.getElementById('secteur').selectedIndex].text;
-      tgt.textContent = `${secteurName} · ${paysName} · cible : ${scanTarget.toLocaleString('fr')}`;
-      bar.classList.add('animated');
-      bar.style.width = '0%';
-
-      rateInterval = setInterval(() => {
-        document.getElementById('statRate').textContent = (rateCountMin * 6).toLocaleString('fr'); 
-        rateCountMin = 0;
-      }, 10000);
-
-      const tbody = document.getElementById('tbody');
-
-      scanInterval = setInterval(() => {
-        if (scanCount >= scanTarget) { stopScan(); return; }
-
-        let email = null;
-        let tries = 0;
-        while (!email && tries < 40) {
-          tries++;
-          const candidate = buildEmail(pays, secteur, ville);
-          if (!generated.has(candidate)) { email = candidate; }
-        }
-        if (!email) return;
-
-        generated.add(email);
-        allEmails.push({ email, secteur, pays, ville: ville === 'all' ? '—' : ville, time: now() });
-        scanCount++;
-        rateCountMin++;
-
-        const sData = SECTEURS_DATA[secteur] || SECTEURS_DATA.all;
-        const paysFlag = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text.split(' ')[0];
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="color:var(--gray-400);font-size:0.7rem;font-family:'JetBrains Mono',monospace">${allEmails.length}</td>
-          <td class="td-email">${email}</td>
-          <td><span class="badge-secteur" style="color:${sData.color};background:${sData.bg}">${sData.label}</span></td>
-          <td class="td-pays">${paysFlag}</td>
-          <td class="td-ville">${ville === 'all' ? '—' : ville}</td>
-          <td class="td-time">${now()}</td>
-        `;
-        tbody.insertBefore(tr, tbody.firstChild);
-
-        while (tbody.children.length > 300) tbody.removeChild(tbody.lastChild);
-
-        document.getElementById('statTotal').textContent = allEmails.length.toLocaleString('fr');
-        document.getElementById('statUniq').textContent  = generated.size.toLocaleString('fr');
-        document.getElementById('resultsCount').textContent = `${allEmails.length.toLocaleString('fr')} email(s)`;
-
-        const pct = Math.min(100, Math.round((scanCount / scanTarget) * 100));
-        bar.classList.remove('animated');
-        bar.style.width = pct + '%';
-
-      }, 1800);
-    }
-
-    function stopScan() {
-      clearInterval(scanInterval);
-      clearInterval(rateInterval);
-      scanInterval = null;
-      rateInterval = null;
-      rateCountMin = 0;
-
-      document.getElementById('scanDot').classList.remove('active');
-      document.getElementById('scanLabel').textContent = scanCount >= scanTarget ? 'Scan terminé' : 'Arrêté';
-      document.getElementById('progressBar').classList.remove('animated');
-      if (scanCount >= scanTarget) document.getElementById('progressBar').style.width = '100%';
-    }
-
-    function clearAll() {
-      stopScan();
-      resetCooldowns();
-      allEmails = [];
-      generated = new Set();
-      scanCount = 0;
-      document.getElementById('tbody').innerHTML = '';
-      ['statTotal','statUniq','statRate'].forEach(id => document.getElementById(id).textContent = '0');
-      document.getElementById('resultsCount').textContent = '0 email(s)';
-      document.getElementById('progressBar').style.width = '0%';
-      document.getElementById('scanLabel').textContent = 'En attente';
-      document.getElementById('scanTarget').textContent = '—';
-    }
-    </script>
+function dl(blob, name) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+}
+</script>
 </body>
 </html>
