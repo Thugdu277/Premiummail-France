@@ -829,6 +829,7 @@
                 <th>Secteur</th>
                 <th>Pays</th>
                 <th>Ville</th>
+                <th>Source</th>
                 <th>Détecté à</th>
               </tr>
             </thead>
@@ -905,40 +906,27 @@ const VILLES = {
   uk: ["Toutes villes","Londres","Birmingham","Manchester","Leeds","Glasgow","Liverpool","Bristol","Sheffield"]
 };
 
-// Domaines locaux (prennent l'extension du pays) vs domaines globaux (ont leur propre extension fixe)
-const DOMAINES_LOCAUX = {
-  fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf"],
-  be:  ["skynet","telenet","proximus"],
-  ch:  ["bluewin","swissmail"],
-  ca:  ["videotron","bell","rogers"],
-  ma:  ["menara","iam"],
-  ci:  ["aviso","orange"],
-  sn:  ["orange","expresso"],
-  tn:  ["topnet","gnet","hexabyte"],
-  de:  ["gmx","web","t-online","freenet"],
-  es:  ["telefonica","terra"],
-  it:  ["libero","virgilio","tiscali"],
-  uk:  ["btinternet","sky","virgin"]
+const DOMAINES_PAYS = {
+  fr:  ["orange","sfr","wanadoo","free","laposte","bbox","neuf","gmail","yahoo","hotmail","outlook","live","protonmail","icloud"],
+  be:  ["skynet","telenet","proximus","gmail","yahoo","hotmail","outlook","live"],
+  ch:  ["bluewin","swissmail","protonmail","gmail","yahoo","hotmail","outlook"],
+  ca:  ["videotron","bell","rogers","gmail","yahoo","hotmail","outlook","live"],
+  ma:  ["menara","iam","gmail","yahoo","hotmail","outlook","live"],
+  ci:  ["aviso","orange","gmail","yahoo","hotmail","outlook"],
+  sn:  ["orange","gmail","yahoo","hotmail","outlook","live"],
+  tn:  ["topnet","gnet","gmail","yahoo","hotmail","outlook"],
+  de:  ["gmx","web","t-online","gmail","yahoo","hotmail","outlook"],
+  es:  ["telefonica","gmail","yahoo","hotmail","outlook","live"],
+  it:  ["libero","virgilio","gmail","yahoo","hotmail","outlook"],
+  uk:  ["btinternet","sky","gmail","yahoo","hotmail","outlook","live"]
 };
-
-// Domaines globaux avec leur vraie extension fixe
-const DOMAINES_GLOBAUX = [
-  { d:"gmail",     ext:".com" },
-  { d:"yahoo",     ext:".com" },
-  { d:"hotmail",   ext:".com" },
-  { d:"outlook",   ext:".com" },
-  { d:"live",      ext:".com" },
-  { d:"proton",    ext:".me"  },
-  { d:"icloud",    ext:".com" },
-  { d:"pm",        ext:".me"  },
-];
 
 const EXT_PAYS = {
   fr:".fr", be:".be", ch:".ch", ca:".ca", ma:".ma", ci:".ci", sn:".sn", tn:".tn", de:".de", es:".es", it:".it", uk:".co.uk"
 };
 
 const PRENOMS = {
-  fr: ["abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdoullah","abel","achille","adam","adeline","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adelaide","agathe","aglae","agnes","ahmad","ahmed","aimery","aime","aimee","alain","alan","alban","albert","albertine","alberto","albin","albine","albino","alberic","aldo","alec","alessandra","alessandro","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aline","alison","alistair","allan","allen","alphonse","amanda","amandine","amar","amaury","ambroise","amel","amina","amelie","anais","andrea","andreas","andrew","andre","andree","ange","angel","angelina","angelo","angie","angele","angelique","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anthony","antoine","antoinette","antoni","antonio","antony","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arthur","arturo","astrid","aude","audebert","audrey","augusta","auguste","augustin","augusto","aurore","aurelia","aureliane","aurelie","aurelien","axel","axelle","aymar","aymeric","aicha","bahia","baptiste","barbara","bart","barthelemy","basile","bastien","baudoin","benaicha","benjamin","benjamine","benoit","bernadette","bernard","bernhard","bertrand","betty","bianca","bill","bjorn","blaise","blanche","blandine","boris","brahim","brian","brice","brigitte","bruce","bruno","beatrice","benedicte","berangere","berengere","cameron","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","catherine","cathie","cathy","cendrine","cerise","chantal","charles","charlie","charline","charlotte","charly","charlene","chiara","chloe","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christele","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotilde","clemence","clement","colette","colin","concepcion","constance","constant","constantin","coralie","corine","corinne","cynthia","cyprien","cyril","cyrille","cecil","cecile","cecilia","cedric","celia","celine","cesar","daisy","dalida","damien","dan","daniel","daniela","danielle","daniele","daphne","dario","darlene","darren","david","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonne","dimitri","diogo","djamel","djamila","dolores","domingos","dominique","donald","dorothy","dorothee","douglas","dounia","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","elena","eliane","elisabeth","elizabeth","eloise","elsa","elvire","eleonore","emily","emma","emmanuel","emmanuelle","enrico","enzo","eric","erick","erik","erika","ernest","ernst","erwan","erwann","erwin","estelle","esther","etiennette","eudes","eugenio","eugene","eugenie","evangeline","eve","eveline","evelyn","evelyne","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fanny","farid","faridah","fatiha","fatima","fatma","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","flavie","flavien","flavio","fleur","florence","florent","florian","floriane","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","francois","francoise","freddy","frederick","frederico","frederik","friedrich","fritz","frederic","frederique","felix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gary","gaspard","gaston","gael","gaelle","gaetan","genevieve","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","ghislain","ghislaine","gianfranco","gianni","gil","gilbert","gilberte","gildas","gilles","ginette","gino","giorgio","giovanni","giselle","gislain","gisele","giuseppe","gladys","gontrand","gonzague","gordon","gottfried","graham","grace","gregoire","gregor","gregory","guido","guillaume","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenael","gwenaelle","gwendoline","gerald","geraldine","gerard","geraud","habib","hans","harold","hassan","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermann","herve","honore","houria","hubert","hugues","huguette","helene","helena","ian","igor","ingrid","ines","irma","irene","isaac","isabel","isabelle","isidore","issam","ivan","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jamel","james","jamila","jan","jane","janine","jannick","jason","jean","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","jimmy","joachim","joanna","joao","joaquim","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jonas","jonathan","jorg","jorge","jorgen","joselaine","joseph","josephus","josette","josiane","jose","josee","josephine","jozef","joel","joelle","juan","judith","jules","julia","juliana","julie","julien","juliette","jurgen","justine","jeremie","jerome","jesus","kadyja","kamel","karen","karim","karima","karin","karina","karine","karl","katerine","kathleen","katia","katy","keith","kelly","kenneth","kenny","kevin","khaled","klaus","kristel","kurt","laetitia","lamia","lana","lars","laura","laure","laureline","laurence","laurent","lauretta","lauriane","laurie","lawrence","leila","lelia","leonardo","leslie","lia","lila","lilian","liliane","lina","linda","line","linette","lionel","lisa","lise","lorenzo","loriane","lorianne","lorraine","louis","louisa","louise","louisette","loic","luc","luca","lucas","lucette","lucia","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludovic","luigi","luis","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","lea","leo","leon","leonard","leone","leonie","leopold","macha","madeleine","madeline","madiha","magali","magalie","magaly","magdeleine","maggy","magnus","malcolm","malik","malika","manfred","manon","manuel","manuela","marc","marcel","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariana","marianna","marianne","marie","marielle","marieva","marilyn","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlene","marta","marthe","martial","martin","martine","martino","mary","marylaine","maryline","marylise","marylou","marylene","maryse","maryvonne","massimiliano","massimo","mathias","mathieu","mathilde","matthew","matthias","matthieu","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maya","maeva","maite","melinda","mercedes","messaoud","messaouda","michael","michel","micheline","michelle","michele","mickael","miguel","mikael","miloud","mireille","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mounia","mounir","mourad","moise","muguette","muriel","murielle","mustapha","mylene","myriam","myrna","melanie","melodie","nadia","nadine","nadege","nancy","nasser","natacha","natanael","nathalie","nathan","nathanael","nathaniel","neil","nelly","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","nina","nino","nissim","nolwenn","nora","norbert","nourdine","noemie","noel","noelle","octave","oceane","odette","odile","olga","oliver","olivia","olivier","olympia","omar","oriane","oscar","oswald","otto","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","pauline","paulo","pedro","peggy","perrine","peter","petrus","philip","philippe","philomene","pierre","pierrette","pierric","pierrick","pietro","prisca","quentin","rachel","rachid","rafael","raffael","raimondo","ralf","ralph","ramon","raoul","raphael","raphaelle","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","rene","renee","reynald","reza","riccardo","richard","rita","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigues","roger","roland","rolande","rolf","rolland","romain","romano","romuald","romeo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","rudi","rudolf","rudolph","rudy","regine","regis","remi","remy","renata","sabine","sabrina","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sandie","sandra","sandrine","sara","sarah","said","sebastian","serge","sergio","servane","shirley","simon","simone","slimane","soazig","sofia","solange","solene","sonia","sonya","sophia","sophie","soraya","souad","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stephan","stephane","stephanie","susan","suzanne","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sebastien","severine","tanguy","tania","tatiana","theodor","thibaud","thibault","thibaut","thierry","thomas","theodore","theophile","therese","tiffany","timothy","tito","tobias","tom","tommy","tony","tristan","ugo","ulrich","ulysse","umberto","valentine","valerie","valery","vanessa","vanina","vicente","victoire","victor","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vladimir","veronique","walter","warren","werner","wilfrid","wilfried","willem","william","willy","wladimir","wolfgang","xavier","yann","yannick","yasmina","yasmine","yael","yohan","yohann","yolande","yolene","youssef","yvan","yveline","yves","yvette","yvon","yvonne","zoubida","edith","eglantine","elie","elisa","elise","eliza","elodie","emeline","emile","emilia","emilie","etienne","eva","adele","albane","aliette","alix","alizee","ambre","amedee","angeline","antonin","arsene","aubin","auriane","barnabe","baudouin","berenice","bertin","benoite","chimene","clementine","corentin","donatien","dorian","doriane","eloi","emilien","evariste","flore","florentine","florine","garence","gautier","godefroy","heloise","hortense","jasmine","joanne","jocelyn","julienne","justin","lambert","laurette","leopoldine","marcelin","marin","mathis","maximilienne","megane","milene","ophelie","paulin","philippine","rejane","rodrigue","romane","segolene","sibylle","timothee","tiphaine","ursule","valentin","vivien","zacharie","zoe"],
+  fr: ["aarav","abdallah","abdel","abdelah","abdelaziz","abdelhalim","abderrahim","abdou","abdoullah","abel","abena","abla","achille","adalric","adalsinde","adam","adama","adeline","adina","adjoba","adolf","adolphe","adrian","adriana","adrianus","adrien","adrienne","adèle","adélaïde","adélie","affoué","agathe","aglaé","agnès","ahmad","ahmed","aimery","aimé","aimée","aisha","aissatou","akira","akissi","akoua","alain","alan","alaric","alban","albane","albert","albertine","alberto","albin","albine","albino","albéric","aldo","alec","alejandro","alena","alessandra","alessandro","alessia","alex","alexander","alexandra","alexandre","alexandrine","alexia","alexis","alfred","ali","alice","alicia","alida","aliette","alima","alina","aline","aliou","alison","alistair","alix","alixande","alizée","aliénor","allan","allen","aloïs","alphonse","amadou","amanda","amandine","amar","amaury","ambre","ambroise","amel","amelia","amina","aminata","amit","amédée","amélie","ananya","anatole","anaëlle","anaïs","ancelin","andrea","andreas","andrew","andrin","andré","andrée","ange","angel","angelina","angeline","angelo","angie","angèle","angélique","anik","anis","anissa","anita","ann","anna","annabel","annabelle","anne","annette","annick","annie","anouk","anselme","anthony","antoine","antoinette","antoni","antonin","antonio","antony","anya","apolline","aria","ariane","ariel","arielle","aristide","arlette","armand","armando","armel","armelle","armin","arnaud","arnauld","arnault","arnold","arsène","arthur","arturo","asher","ashley","assia","astan","astou","astrid","athénaïs","aubin","aude","audebert","audrey","augusta","auguste","augustin","augusto","auriane","auroline","aurore","aurèle","aurélia","auréliane","aurélie","aurélien","ava","aveline","avigail","avraham","awa","axel","axelle","ayao","aymar","aymeric","ayoub","azilis","aïcha","aïssatou","bahia","baptiste","barbara","barnabé","bart","barthélémy","baruch","basile","bastien","bathilde","batya","baudoin","baudouin","beat","beatrice","beatriz","benaïcha","benjamin","benjamine","benoît","benoîte","bernadette","bernard","bernhard","bertheline","bertille","bertin","bertrand","betty","bianca","bilal","bill","bineta","binta","björn","blaise","blanche","blandine","boaz","bongani","boris","boubacar","brahim","brenda","brent","brian","brice","brigitte","bruce","bruno","béatrice","bénédicte","béranger","bérangère","bérenger","bérengère","bérénice","callista","cameron","camila","camille","candice","capucine","carine","carl","carla","carlo","carlos","carmen","carol","carole","caroline","carolyn","cassiopée","caterina","catherine","cathie","cathy","cendrine","cerise","chahinez","chantal","charles","charlie","charline","charlotte","charly","charlène","chaïma","cheick","cheikh","chen-wei","chiara","chimène","chinedu","chioma","chloé","christel","christelle","christian","christiane","christina","christine","christoph","christophe","christopher","christèle","chrystel","cindy","claire","clara","clarisse","claude","claudette","claudia","claudie","claudine","claudio","claudius","clotaire","clotilde","clémence","clément","clémentine","cléophée","colette","colin","coline","concepcion","constance","constant","constantin","coralie","corentin","corine","corinne","coumba","craig","cynthia","cyprien","cyril","cyrill","cyrille","cécil","cécile","cécilia","cédric","célestine","célia","célian","céline","césaire","césar","côme","daisy","dalida","damien","dan","daniel","daniela","danielle","danièle","daphné","daria","dario","darlène","darren","david","dawn","deborah","delphine","denis","denise","dennis","denys","denyse","desmond","diana","diane","didier","diego","dieter","dietrich","dieudonné","dieynaba","dimitri","diogo","dior","divine","diya","djamel","djamila","djazia","djénéba","dolorès","domingos","dominique","domitille","donald","donatien","dorian","doriane","doron","dorothy","dorothée","douglas","dounia","duncan","dvora","eddie","eddy","edgar","edgard","edmond","edmonde","edoardo","edouard","eduardo","edward","edwige","edwin","efrat","efua","ehui","eitan","elad","elena","elia","eliana","eliane","eliezer","elin","elinor","elio","elisa","elisabeth","elisheva","elizabeth","ella","elodie","eloi","eloïse","elphège","elsa","elvire","elyes","elzéar","eléonore","emilien","emily","emma","emmanuel","emmanuelle","enguerran","enguerrand","enrico","enzo","eric","erick","erik","erika","erin","ermeline","ernest","ernst","erwan","erwann","erwin","estelle","esther","ethan","etiennette","eudes","eugenio","eugène","eugénie","eulalie","eun-ji","eva","evangéline","evariste","eve","eveline","evelyn","evelyne","evrard","ezra","fabian","fabien","fabienne","fabio","fabiola","fabre","fabrice","fabrizio","fadima","fadwa","fanny","fanta","farid","faridah","fatiha","fatima","fatma","fatoumata","faustine","ferdinand","fernand","fernande","fernando","ferouz","filippo","fiona","firmin","flavia","flavie","flavien","flavio","fleur","flore","florence","florent","florentine","florestine","florian","floriane","florine","flurin","france","francesca","francesco","francine","francis","francisco","franck","franco","frank","frantz","franz","français","français-xavier","françois","françoise","freddy","frederick","frederico","frederik","friedrich","fritz","frédéric","frédérique","fulbert","féliciane","félix","gabriel","gabriele","gabriella","gabrielle","gaby","gad","gaetanino","gaetano","gail","galina","garance","garcine","garence","gary","gaspard","gaston","gaudéric","gautier","gaël","gaëlle","gaëtan","geneviève","geoffrey","geoffroy","georg","george","georges","georgette","georgio","gerardo","gerhard","germain","germaine","gervais","getachew","ghislain","ghislaine","gian","gianfranco","gianni","gil","gilad","gilbert","gilberte","gildas","gilles","ginette","gino","giorgia","giorgio","giovanni","giselle","gislain","gisèle","giuseppe","gladys","godefroy","gontrand","gonzague","gordon","gottfried","grace","graham","grâce","grégoire","grégor","grégory","guido","guilhem","guillaume","guillemette","guislain","gunter","gunther","gustave","guy","guylaine","gwen","gwenaël","gwenaëlle","gwendoline","gérald","géraldine","gérard","géraud","habib","hadassah","hans","harel","harold","hassan","hawa","heather","hector","heinrich","helen","helmut","henri","henriette","henry","herbert","herman","hermance","hermann","hervé","hiba","hila","hiroshi","hombeline","honoré","hortense","houria","hubert","hugues","huguette","hyun-woo","héloïse","hélène","héléna","ian","ibrahim","ibrahima","idriss","idrissa","igor","ilham","imane","ingrid","innocente","inès","irina","irma","irène","isaac","isabel","isabella","isabelle","isaline","isambard","isidore","isolde","issam","itamar","ivan","iyad","jack","jackie","jacky","jacob","jacobus","jacqueline","jacques","jacquette","jade","jamel","james","jamila","jan","jane","janik","janine","jannick","jasmine","jason","jean","jean-baptiste","jean-français","jean-françois","jean-louis","jean-luc","jean-marie","jean-pierre","jeanine","jeanne","jeannette","jeannie","jeannine","jehan","jennifer","jenny","jeremy","jessica","jessie","jessy","ji-hoon","ji-woo","jimmy","joachim","joanna","joanne","joao","joaquim","jocelin","jocelyn","jocelyne","johan","johann","johanna","johanne","johannes","john","johnny","jomo","jonas","jonathan","jorg","jorge","jorgen","joris","joselaine","joseph","josephus","josette","joshua","josiane","josé","josée","joséphin","joséphine","joud","jozef","joël","joëlle","juan","judith","jules","julia","juliana","julie","julien","julienne","juliette","jun","jurgen","justin","justine","jérémie","jérôme","jésus","kadiatou","kadyja","kamel","kandia","kanya","karen","karim","karima","karin","karina","karine","karl","kaspar","katerine","kathleen","katia","katy","keith","kelly","kenji","kenneth","kenny","kenza","kevin","khadija","khady","khaled","khaoula","kirsty","klaus","koffi","kristel","ksenia","kumba","kurt","kwame","kéné","ladin","ladina","laetitia","lambert","lamia","lamine","lana","landry","larissa","lars","lassina","laura","laure","laureline","laurence","laurent","lauretta","laurette","lauriane","laurie","laurine","lawrence","leila","lelia","leonardo","lerato","leslie","levi","lia","lila","lilian","liliane","lily","lina","linaï","linda","line","linette","ling","linh","lionel","lior","lisa","lise","lison","livio","lorenz","lorenzo","loriane","lorianne","lorraine","louay","loubna","louis","louisa","louise","louisette","loïc","luc","luca","lucas","lucette","lucia","luciana","luciano","lucie","lucien","lucienne","lucile","lucille","lucio","lucy","ludivine","ludiwine","ludmila","ludovic","luigi","luis","lukas","lydia","lydie","lylia","lyliane","lyna","lynda","lysiane","léa","léandre","léo","léocadie","léon","léonard","léone","léonie","léontine","léopold","léopoldine","macha","madeleine","madeline","madiha","madison","magali","magalie","magaly","magdeleine","maggy","magnus","mahaut","mahawa","maimouna","malak","malcolm","malik","malika","malka","malo","mamadou","manfred","manon","manuel","manuela","marc","marceau","marcel","marcelin","marceline","marcelino","marcelle","marcellin","marcello","marco","margaret","margareth","margaux","marguerite","maria","mariam","mariama","mariana","marianna","marianne","mariatou","marie","marie-claude","marielle","marieva","marilyn","marin","marina","marine","marinette","mario","marion","marius","marjolaine","marjorie","mark","markus","marlène","marta","marthe","martial","martin","martina","martine","martino","marwa","mary","marylaine","maryline","marylise","marylou","marylène","maryse","maryvonne","massimiliano","massimo","mateo","mathias","mathieu","mathilde","mathis","matteo","matthew","matthias","matthieu","mattia","maud","maurice","mauricette","mauro","max","maxence","maxime","maximilien","maximilienne","maya","mayssa","maéva","maëline","maëlle","maëlou","maïlys","maïté","megan","mei-ling","meiling","meinrad","meir","melanie","melinda","menachem","mercedes","meriem","meryem","messaoud","messaouda","mia","michael","michel","micheline","michelle","michèle","mickaël","miguel","mikael","mila","milena","miloud","milène","min-jun","minata","mireille","miriam","mirjam","misaki","modibo","mohamed","mohammad","mohammed","monica","monique","morgan","morgane","mouaad","mounia","mounir","mourad","moussa","moustapha","moïse","muguette","muhammad","muriel","murielle","mustapha","mylène","myriam","myrna","mégane","mélanie","mélchior","mélisende","mélodie","mélusine","nadia","nadine","nadya","nadège","nafi","nafissatou","nancy","nasser","natacha","natalia","natanael","nathalie","nathan","nathanaël","nathaniel","nawal","naël","naïma","ndeye","ndèye","nechama","neil","nelly","neria","ngozi","nguyen","nicaise","nicholas","nick","nicolas","nicole","niels","nigel","niklaus","nina","nino","nissim","nizar","noa","noam","noemi","noham","nolwenn","nora","norbert","nour","nourdine","noélie","noémie","noël","noëlle","néné","octave","océane","odeline","odette","odile","odon","oksana","olga","oliver","olivia","olivier","olympe","olympia","omar","ombeline","onésime","ophélie","oren","oriane","oscar","oswald","otto","oumar","oumou","oussama","paco","pamela","paola","paolo","pascal","pascale","pascaline","patrice","patricia","patrick","paul","paula","paule","paulette","paulin","pauline","paulo","pedro","peggy","perrine","peter","petrus","philibert","philip","philippe","philippine","philomène","pierre","pierre-luc","pierrette","pierric","pierrick","pietro","pimchanok","polina","prisca","priya","prudence","pépin","pétronille","quentin","quirin","quitterie","rachel","rachid","radegonde","rafaël","raffaël","rahel","raimondo","rainier","ralf","ralph","rama","ramatoulaye","ramon","ramona","rania","raoul","raphaël","raphaëlle","rayane","raymond","raymonde","raynald","rebecca","regina","reine","reinhard","renato","renaud","renaudin","rené","renée","reto","reuven","reynald","reza","riccardo","richard","rihab","rita","rivka","robert","roberta","roberto","robin","rocco","roderick","rodolphe","rodrigue","rodrigues","roger","rohan","rokhaya","roland","rolande","rolf","rolland","romain","romane","romano","romina","romuald","roméo","ronald","ronan","rosalie","rosane","rosanna","rose","roseline","roselyne","rosette","rosine","rosy","roxane","ruben","rudi","rudolf","rudolph","rudy","ryan","rym","régine","régis","réjane","rémi","rémy","rénata","sabine","sabrina","safiatou","sali","salima","salma","salomon","salvador","salvator","salvatore","sam","samantha","sami","samia","samir","samira","samuel","samy","sanae","sandie","sandra","sandrine","sandro","santiago","sara","sarah","sarai","saran","saïd","scarlett","scott","sebastian","selina","selma","seo-yeon","seraina","serge","sergio","servane","severin","seydou","shannon","sheila","shimon","shira","shirley","shlomo","sibylle","sidoine","sigismond","siham","silvan","silvia","simon","simone","sipho","sira","sirine","sixtine","slimane","soazig","sofia","sofiane","sokhna","solal","solange","soline","solène","somsak","sonia","sonya","sophia","sophie","soraya","souad","souleymane","soumaya","stanislas","stefan","stefanie","stefano","stella","stephen","steve","steven","stéphan","stéphane","stéphanie","susan","suzanne","svetlana","sybille","sydney","sylvain","sylvaine","sylvestre","sylvette","sylvia","sylviane","sylvie","sylvine","sébastien","ségolène","séraphine","séverine","taha","talia","tamar","tamina","tancrède","tanguy","tania","tariq","tata","tatiana","thandiwe","theodor","thiago","thibaud","thibault","thibaut","thierry","thomas","théodore","théodoric","théodosie","théophane","théophanie","théophile","théotime","thérèse","tidiane","tiffany","tigist","timoléon","timothy","timothée","tiphaine","tito","tiziano","tobias","tom","tommy","tony","tristan","tunde","tyler","tzipora","téné","ugo","ulric","ulrich","ulysse","umberto","urbain","urs","ursula","ursule","ursuline","vadim","valentin","valentina","valentine","valentinea","valérie","valérien","valéry","vanessa","vanina","venceslas","vera","veronica","vicente","victoire","victoirette","victor","victoria","vihaan","vincent","vincente","vincenzo","violaine","violetta","virginia","virginie","vittoria","vittorio","vivian","viviane","vivianne","vivien","vladimir","voravit","véronique","walburge","wallerand","walter","wanjiku","warren","wayne","wei","werner","widad","wilfrid","wilfried","wilhelmine","willem","william","willy","wladimir","wolfgang","xavier","xavière","xiaoyu","yanik","yann","yannick","yarden","yasmina","yasmine","yaw","yaye","yaël","yehuda","yelena","yohan","yohann","yolande","yolène","yonatan","youness","youssef","yrieix","ysaline","ysoline","yuka","yuki","yvan","yveline","yves","yvette","yvon","yvonne","zacharie","zachary","zainab","zineb","zohar","zoubida","zoya","zoé","zélie","zélinde","zénaïde","zéphirin","édith","églantine","élie","élisa","élise","éliza","élodie","éloi","éloïse","émeline","émile","émilia","émilie","éric","étienne","éva","évelyne"],
   be: ["axel","brice","celine","dominique","emile","francoise","gerard","hilde","isabelle","jan","koen","lien","marc","nathalie","olivier","patricia","quentin","roos","stefan","tine","ulrike","veerle","wout","xavier","yves","zoe"],
   ch: ["alex","beat","carmen","daniel","eva","felix","gabi","hans","irene","jakob","kurt","lena","marco","nina","otto","petra","rolf","sarah","thomas","ursula","victor","walter","xenia","yves","zara"],
   ca: ["alex","brigitte","charles","diane","etienne","francine","gabriel","helene","ivan","josee","kevin","lucie","marc","nadine","olivier","pascale","quentin","rachel","simon","therese","ulric","valerie","william","xavier","yvonne","zacharie"],
@@ -953,7 +941,7 @@ const PRENOMS = {
 };
 
 const NOMS = {
-  fr: ["martin","bernard","thomas","petit","robert","richard","durand","dubois","moreau","simon","laurent","lefebvre","michel","garcia","david","bertrand","roux","vincent","fournier","morel","girard","andre","lefevre","mercier","dupont","lambert","bonnet","francois","martinez","legrand","garnier","faure","rousseau","blanc","guerin","henry","roussel","nicolas","perrin","morin","mathieu","clement","gauthier","fontaine","giraud","boyer","caron","chevalier","robin","masson"],
+  fr: ["abecassis","abitbol","adam","adebayo","aebischer","aeschlimann","aggrey","ahmed","aicard","alary","ali","allen","almeida","alves","amani","amrani","anderson","andre","antoine","armand","arnaud","artaud","assalé","assefa","attali","auberon","aubert","aubry","audibert","aymard","azoulay","azzouz","bagayoko","bailly","bakare","bamba","barbier","baron","barre","barthelemy","baumann","bayle","beaumont","becker","belkacem","bellanger","bellavoine","benali","benard","benaroch","benchetrit","benhamou","benoit","bensalah","bensalem","benyamina","berger","bernard","bernasconi","bertin","bertrand","besson","bianchi","bieri","bitton","blanc","blanchard","blaser","boakye","boisselier","bonnet","bouchard","boucher","bouchet","boulanger","bourgeois","bouvier","boyer","braun","breton","brown","brun","brunet","brunner","bérard","bérubé","bürkli","cadoret","camara","campbell","carlier","caron","carpentier","carre","castelli","castro","chabrol","champagne","chanteclerc","charles","charnay","charpentier","chastel","chauvin","cherkaoui","chevalier","chevallier","choi","cissé","clairmont","clement","cloutier","colin","collet","collin","colombo","compaoré","cordier","costa","coulibaly","cousin","da silva","daniel","darmon","david","davis","delaistre","delaroche","delaunay","delmas","delorme","delpech","delsol","dembélé","denis","dervaux","deschamps","desforges","diabaté","diallo","diarra","diop","dlamini","doumbia","dubois","dubosson","dubé","dufour","dufourcq","duhamel","dumas","dumont","dupont","dupuis","dupuy","durand","durieux","duval","díaz","egger","el amrani","el idrissi","elbaz","escande","esposito","etienne","fabre","fabrettes","fall","faure","favre","fedorov","fernandez","fernández","ferraro","ferreira","fischer","fleurimont","fleury","fontaine","fontana","fortin","fournier","francois","fraser","frey","frémaux","gagnon","gaillard","gallagher","garcia","garnier","garrigues","gasser","gauthier","gautier","gay","gerard","gerber","germain","gfeller","gilbert","gillet","gilliéron","girard","giraud","giroud","gomez","gonzalez","graf","grand","grondin","guerin","gueye","guichard","guillaume","guillemette","guillot","gupta","guyot","gómez","haddad","haddadi","hamon","harris","hartmann","hazan","henry","hernández","herve","hoarau","hoffmann","huang","hubert","huet","hug","humbert","hébert","hérault","idrissi","ilboudo","ilunga","isenegger","iyer","jackson","jacob","jacquet","jalabert","jean","jin","johnson","johnston","joly","jones","joshi","joubertin","julien","jung","kaboré","kanyba","karpov","keita","keller","kelly","kennedy","kenyatta","khan","khumalo","kim","king","klein","kobayashi","kobel","koch","koffi","konan","konaté","koné","kouassi","kouyaté","kozlov","krause","küng","lacroix","lafaye","laforêt","lambert","lamy","landrin","lange","langlois","lapointe","laporte","laurent","lavigne","lavoie","le gall","le goff","le roux","leblanc","lebrun","leclerc","leclercq","lecomte","lee","lefebvre","lefevre","leger","legrand","lejeune","lemaire","lemaitre","lemoine","lenoir","leroux","leroy","leveque","levy","li","lin","liu","lopez","lormel","louis","lucas","lustenberger","lutz","lévesque","lópez","macdonald","macleod","mahmood","maillard","makarov","mallet","malric","mansour","mansouri","marchal","marchand","marechal","marie","martin","martinez","marty","martínez","maréchal","masson","mathieu","mbaye","mckenzie","mclean","meier","menard","mensah","mercanton","mercier","meunier","meyer","meziane","michaud","michel","miller","millet","minh tu","mitchell","monnier","montalban","montauban","montdragon","monteil","montelieu","montfort","moore","moreau","morel","moret","morin","morozov","moulin","moyal","mubiala","muller","murphy","murray","mwamba","mwangi","müller","naccache","nadeau","ncube","ndiaye","ndlovu","ndoye","ndri","nguyen","nicolas","nikiema","nikitin","nkrumah","noel","noguès","novikov","o'brien","obi","ohayon","okafor","oliveira","olivier","orliac","orlov","osei","ouattara","ouedraogo","ould ahmed","ouédraogo","paris","park","pasquier","patel","patterson","payet","pelletier","perez","perret","perrier","perrin","perrinot","perrot","petit","petrov","philippe","picard","pichon","pierre","piller","poirier","ponsardin","popov","poulain","prevost","pélissier","pérez","quatrehomme","ramírez","ravault","raynaudin","reda","reddy","remy","renard","renaud","renaudin","renault","rey","reynaud","ribeiro","ricci","richard","richter","riviere","robert","robertson","robin","rochat","roche","rodriguez","rodríguez","roger","rolland","ross","rossi","rossini","rousseau","roussel","rousselot","roux","roy","royer","sabatier","saetang","sakho","sanchez","sangaré","sanogo","santos","sato","schaer","schmid","schmitt","schneider","schürch","sebag","seignelay","sharma","sidibé","silva","simard","simon","sitbon","smith","sokolov","somboon","sorel","sow","steiner","stewart","suksом","sutter","sy","sylla","takahashi","tanaka","tano","tapsoba","taylor","tessier","teyssier","thi lan","thi mai","thiam","thibaudier","thomas","thompson","toledano","torres","touré","tran","traore","traoré","tremblay","vaillant","valençay","valmont","van hung","vasseur","vauclair","vaudelin","vayssière","vernier","vidal","vignal","villedieu","villeneuve","vincent","volkov","vonlanthen","wagner","wang","wargnier","watanabe","weber","werner","white","widmer","williams","wilson","wolf","wong","wright","wyss","yamamoto","yao","young","ythier","yvard","zanchi","zbinden","zenou","zhang","zhao","ziegler","zimmermann","zongo"],
   be: ["janssen","peeters","maes","jacobs","willems","claes","goossens","wouters","martens","smeets","dupont","simon","lambert","renard","leroy","piron","denis","thomas","adam","collignon"],
   ch: ["mueller","meier","schmid","keller","weber","huber","schneider","zimmermann","steiner","moser","dubois","girard","favre","blanc","bonvin","roux","dupont","morel","jacot","perroux"],
   ca: ["tremblay","gagnon","roy","cote","bouchard","gauthier","morin","lavoie","fortin","ouellet","pelletier","belanger","lepage","lefebvre","bergeron","girard","thibault","leblanc","paquin","simard"],
@@ -961,7 +949,7 @@ const NOMS = {
   ci: ["coulibaly","diallo","kone","traore","bamba","koné","doumbia","touré","sylla","konaté","yao","kouassi","bah","ouattara","diabaté","sidibé","dembélé","camara","kouyaté","bagayoko"],
   sn: ["diop","fall","ndiaye","ba","mbaye","sow","sy","diagne","cisse","gueye","diouf","sarr","thiam","faye","ly","wade","gaye","diallo","ndour","toure"],
   tn: ["ben ali","trabelsi","belhaj","chaabane","jlassi","khlifi","mansouri","nasri","ouali","rahmani","saidi","tlili","zghal","zouari","abidi","belhadj","cherni","dridi","ferchichi","hamdi"],
-  de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann"],
+  de: ["mueller","schmidt","schneider","fischer","weber","meyer","wagner","becker","schulz","hoffmann","schafer","Koch","bauer","richter","klein","wolf","schroeder","neumann","schwarz","zimmermann","diallo","traore","koné","coulibaly","mbaye","ndiaye","fall","diop","sow","bamba","keita","camara","touré","sylla","kouyaté","dembélé","sidibé","ouattara","bagayoko","sanogo","cissé","konaté","doumbia","diabaté","traoré","sakho","gueye","thiam","ndoye"],
   es: ["garcia","martinez","lopez","sanchez","gonzalez","perez","rodriguez","fernandez","moreno","jimenez","ruiz","hernandez","diaz","alvarez","romero","torres","navarro","dominguez","ramos","gil"],
   it: ["rossi","russo","ferrari","esposito","bianchi","romano","colombo","ricci","marino","greco","bruno","gallo","conti","de luca","mancini","costa","giordano","rizzo","lombardi","barbieri"],
   uk: ["smith","jones","williams","taylor","brown","davies","evans","wilson","thomas","roberts","johnson","white","martin","thompson","garcia","martinez","robinson","clark","rodriguez","lewis"]
@@ -985,20 +973,201 @@ const SECTEURS_DATA = {
 
 // Noms d'entreprise réalistes par secteur (pour varier les formats d'email)
 const ENTREPRISES = {
-  btp:       ["batipro","construtech","artisanbat","batigroupe","btpfrance","cbatiment","maconnerie"],
-  genie:     ["geotechnik","civiltech","routeplus","ponts-et-chaussees","terrassement","genieplus"],
-  immo:      ["agenceimmo","cabinet-immo","residence","patrimoine","foncier","immopro","agencepro"],
-  auto:      ["autoservice","garage","motorpro","carexpert","mecanique","autoplus","vente-auto"],
-  sante:     ["cabinetmedical","clinique","pharmacie","santepro","medecin","laboratoire","soins"],
-  finance:   ["conseils-finances","patrimoine","gestion-active","courtage","invest","assurance"],
-  tech:      ["techsolutions","digital","softpro","devagency","itservices","cloudtech","appdev"],
-  industrie: ["industriepro","usineplus","fabrication","production","metallurgie","atelier"],
-  transport: ["logistik","transport","livraison","fret","coursier","expeditions","movingpro"],
-  commerce:  ["boutique","distribution","grossiste","retail","import-export","commerce"],
-  juridique: ["cabinet-avocat","notaire","juridique","conseil-juridique","etude","barreau"],
-  education: ["formation","ecole","academie","centre-formation","apprentissage","elearning"]
+  btp: [
+    "vinci-construction","bouygues-construction","eiffage-construction",
+    "nge-batiment","spie-batignolles","fayat-batiment","razel-bec",
+    "colas","eurovia","eiffage-genie-civil","legendre-construction",
+    "gcc-groupe","demathieu-bard","leon-grosse","ga-smart-building",
+    "cari-construction","sogea-construction","botte-fondations",
+    "chantiers-modernes","dodin-campenon-bernard","guintoli","ehtp","etf",
+    "sade","muller-tp","roger-martin","charier-tp","perrier-tp","sobeca",
+    "spie-france","equans-france","eiffage-energie-systemes","cegelec",
+    "ineo","bouygues-energies","snef","omexom","serfim-energies","citeos",
+    "soletanche-bachy","menard-france","freyssinet","sixense","setec-batiment",
+    "artelia","egis-batiments","arcadis-france","ote-ingenierie",
+    "groupe-briand","groupe-balas","groupe-pichet","groupe-lamotte",
+    "groupe-realites","groupe-gagneraud","groupe-pigeon","groupe-lhotellier",
+    "groupe-nge-rail","groupe-serfim-tp","groupe-firalp","groupe-socramat",
+    "groupe-rabot-dutilleul","groupe-tpf-ingenierie","groupe-gse",
+    "groupe-patriarche","groupe-acorus","groupe-sogetrel","groupe-circet",
+    "groupe-baudin-chateauneuf","groupe-matiere","groupe-cardem","groupe-brunet",
+    "groupe-dumez","groupe-gtm-batiment","groupe-campenon-bernard","groupe-norpac",
+    "groupe-bec-construction","groupe-cbe-construction"
+  ],
+  genie: [
+    "eiffage-infra","vinci-autoroutes","spie-batignolles-tp",
+    "eurovia","colas","appia","gtie-tp","sntp","gtm-tp",
+    "fayattp.fayat","nfc.fayat","becconstruction.fayat",
+    "fmpg.fayat","urbaine.fayat","routexpert","geotec-france"
+  ],
+  immo: [
+    "kaufmanbroad","nexity","icade","covivio","unibail",
+    "fonciere-des-regions","maisons-du-monde","maisons-france-confort",
+    "bouwfonds","altarea","promogim","bouygues-immobilier",
+    "gfi-immo","cabinet-moreau-immobilier","sci-patrimoine-invest"
+  ],
+  auto: [
+    "plastic-omnium","valeo","faurecia","renault-group",
+    "stellantis","michelin","saint-gobain-auto",
+    "autodistribution","groupauto","cartec","mecanor"
+  ],
+  sante: [
+    "ap-hp","hospices-civils-lyon","chu-lille","chu-bordeaux","chu-toulouse",
+    "chu-nantes","chu-strasbourg","chu-rennes","chu-montpellier","chu-nice",
+    "chu-angers","chu-brest","chu-caen","chu-dijon","chu-limoges",
+    "chu-poitiers","chu-reims","chu-rouen","chu-tours","chu-clermont-ferrand",
+    "ch-orleans","ch-lemans","ch-valenciennes","ch-saint-malo","ch-larochelle",
+    "ch-amiens","ch-perpignan","ch-bayonne","ch-pau","ch-tarbes",
+    "ch-colmar","ch-mulhouse","ch-metz","ch-nancy","ch-troyes",
+    "ch-besancon","ch-avignon","ch-nimes","ch-cannes","ch-ajaccio",
+    "ch-bastia","ch-chambery","ch-annecy","ch-vannes","ch-quimper",
+    "ch-lorient","ch-laval","ch-chartres","ch-bourges","ch-chateauroux",
+    "elsan","ramsay-sante","vivalto-sante","almaviva-sante","aesio-sante",
+    "hp-loire","hp-antony","hp-parly2","hp-jean-mermoz","hp-provence",
+    "clinique-de-lunion","clinique-pasteur","clinique-saint-augustin",
+    "clinique-du-parc","clinique-victor-hugo","clinique-saint-jean",
+    "clinique-belledonne","clinique-du-sport","clinique-du-tonkin",
+    "clinique-mathilde","clinique-saint-vincent","clinique-jouvenet",
+    "clinique-de-la-sauvegarde","clinique-val-douest","clinique-saint-martin",
+    "clinique-sainte-marie","clinique-du-cedre","clinique-bouchard",
+    "clinique-rhena","clinique-croix-du-sud","clinique-de-leurope",
+    "clinique-saint-roch","clinique-de-gascogne","clinique-les-cedres",
+    "clinique-de-courlancy","clinique-saint-hilaire","clinique-du-pre",
+    "clinique-saint-pierre","clinique-ambroise-pare","clinique-de-choisy",
+    "clinique-des-lilas","clinique-du-louvre","clinique-arago",
+    "clinique-monceau","clinique-bizet","clinique-turin",
+    "clinique-blomet","clinique-sainte-clotilde","clinique-cote-demeraude",
+    "korian","orpea","biomérieux","servier","sanofi-pasteur","ipsen",
+    "virbac","vetoquinol","guerbet","abivax","genfit",
+    "eurofins-biomnis","cerba-healthcare","laboratoire-inovie"
+  ],
+  finance: [
+    "axa-france","allianz-france","groupama","maaf","mma","gmf","macif","maif",
+    "swiss-life-france","generali-france","credit-agricole-assurances",
+    "cnp-assurances","matmut","abeille-assurances","bnp-paribas-cardif",
+    "harmonie-mutuelle","mgen","mutuelle-generale","mnt","mnh",
+    "interiale","apivia","aesio-mutuelle","ag2r-la-mondiale","malakoff-humanis",
+    "la-france-mutualiste","mutuelle-bleue","uneo","ociane-matmut","mercer-france",
+    "alptis","april","smatis","pro-btp","audiens","garance","carac",
+    "solimut-mutuelle","eovi-mcd","identites-mutuelle","mutest","mgc-mutuelle",
+    "neoliane-sante","ucr-assurance","ccmo-mutuelle","klesia",
+    "mutuelle-verte","mutuelle-de-poitiers","thelem-assurances","assur-one",
+    "la-francaise-des-jeux","ardian","edenred","axa-gestion",
+    "bnp-patrimoine","credit-agricole-conseil","sg-private-banking",
+    "cabinet-finance-conseil","invest-partner"
+  ],
+  tech: [
+    "sopra-steria","capgemini","alten","devoteam","ubisoft",
+    "idemia","gemalto","technicolor","cegedim","neopost",
+    "bigben-interactive","adeunis","sii-group","inetum","wavestone"
+  ],
+  industrie: [
+    "safran","air-liquide","solvay","eramet","nexans",
+    "saint-gobain","essiluxottica","mersen","lisi","fives",
+    "smurfit-kappa","tereos","recylex","limagrain","groupe-seb",
+    "tarkett","bolloré","saft","trigano","dassault-aviation",
+    "zodiac-aerospace","figeac-aero","amplitude-surgical","valneva"
+  ],
+  transport: [
+    "geodis","bolloré-logistics","kuehne-nagel-fr","la-poste",
+    "sncf-logistique","saur","derichebourg","elior","bourbon",
+    "sonepar","rexel","lisi-aerospace","groupe-crit"
+  ],
+  commerce: [
+    "lvmh","hermes-paris","pernod-ricard","lagardere","smcp",
+    "groupe-lactalis","verallia","bricorama","naf-naf",
+    "benéteau","vicat","groupe-alès","butagaz","totalenergies"
+  ],
+  juridique: [
+    "fidal","gide-loyrette-nouel","bredin-prat","jeantet",
+    "darrois-villey-maillot-brochier","august-debouzy","lpa-cgr-avocats",
+    "bersay","racine-avocats","flichy-grange-avocats","capstan-avocats",
+    "pdgb-avocats","fromont-briens","cms-francis-lefebvre","dentons-paris",
+    "clifford-chance-paris","linklaters-paris","herbert-smith-freehills",
+    "white-case-paris","baker-mckenzie-paris","bird-bird-france",
+    "hogan-lovells-paris","jones-day-paris","ashurst-paris","mayer-brown-paris",
+    "freshfields-paris","de-pardieu-brocas-maffei","veil-jourde",
+    "viguie-schmidt","ftpa","cvml","sekri-valentin-zerrouk","delcade",
+    "simon-associes","cornet-vincent-segurel","ds-avocats","franklin-avocats",
+    "latournerie-wolfrom","vaughan-avocats","adaltys","lexcase",
+    "bignon-lebray","tgs-france-avocats","foureau-avocats","yards-avocats",
+    "cohen-amir-aslani","bruzzo-dubucq","granrut","reinhart-marville-torre",
+    "aramis-avocats","bg2v","coblence-avocats","dtmv-avocats","lerins",
+    "nomos-avocats","squadra-avocats","valther","delvolve-trichet",
+    "ggv-avocats","lexavoue","mermoz-avocats","temime-avocats","soulier-avocats",
+    "jeausserand-audouard","synergie-huissiers","huissiers-reunis","acta-juris",
+    "aix-juris","scp-bourreau","scp-proust","scp-balincourt","scp-targe",
+    "scp-actea","scp-exeact","scp-juris38","scp-mediterranee-justice",
+    "scp-atlantique-justice","scp-grand-ouest-justice","scp-rhone-alpes-justice",
+    "scp-provence-huissiers","scp-nord-justice","scp-est-justice",
+    "scp-bretagne-huissiers","scp-alsace-justice","scp-lorraine-justice",
+    "scp-aquitaine-justice","scp-occitanie-justice","scp-paris-execution",
+    "scp-seine-justice","scp-horizon-justice","scp-hexagone-justice",
+    "scp-france-recouvrement"
+  ],
+  education: [
+    "groupe-inseec","igs-formation","cesi-ecole","afpa-formation",
+    "cfa-batiment","centre-formation-pro","academie-metiers",
+    "ecole-travaux-publics","ifp-training","emlyon-business"
+  ]
 };
 
+// Patterns d'email pro par type de domaine
+const PRO_PATTERNS = [
+  // Nominatifs (les plus réalistes)
+  (p, n) => `${p}.${n}`,
+  (p, n) => `${p[0]}.${n}`,
+  (p, n) => `${p}.${n[0]}`,
+  (p, n) => `${p[0]}${n}`,
+  // Fonctionnels
+  ()     => `contact`,
+  ()     => `info`,
+  ()     => `direction`,
+  (p, n) => `${p}.${n}`,
+  // Département + nom
+  (p, n) => `rh.${p}.${n}`,
+  (p, n) => `commercial.${p}.${n}`,
+  (p, n) => `technique.${p}.${n}`,
+  // Régionaux
+  (p, n) => `${p}.${n}.idf`,
+  (p, n) => `${p}.${n}.sud`,
+];
+
+
+const REGIONS_FR = [
+  "auvergne-rhone-alpes","bourgogne-franche-comte","bretagne","centre-val-de-loire",
+  "corse","grand-est","hauts-de-france","ile-de-france","normandie",
+  "nouvelle-aquitaine","occitanie","pays-de-la-loire","paca",
+  "guadeloupe","martinique","guyane","la-reunion","mayotte"
+];
+
+const DEPTS_FR = [
+  "ain","aisne","allier","alpes-de-haute-provence","hautes-alpes","alpes-maritimes",
+  "ardeche","ardennes","ariege","aube","aude","aveyron","bouches-du-rhone",
+  "calvados","cantal","charente","charente-maritime","cher","correze",
+  "corse-du-sud","haute-corse","cote-dor","cotes-darmor","creuse","dordogne",
+  "doubs","drome","eure","eure-et-loir","finistere","gard","haute-garonne",
+  "gers","gironde","herault","ille-et-vilaine","indre","indre-et-loire",
+  "isere","jura","landes","loir-et-cher","loire","haute-loire","loire-atlantique",
+  "loiret","lot","lot-et-garonne","lozere","maine-et-loire","manche","marne",
+  "haute-marne","mayenne","meurthe-et-moselle","meuse","morbihan","moselle",
+  "nievre","nord","oise","orne","pas-de-calais","puy-de-dome",
+  "pyrenees-atlantiques","hautes-pyrenees","pyrenees-orientales","bas-rhin",
+  "haut-rhin","rhone","haute-saone","saone-et-loire","sarthe","savoie",
+  "haute-savoie","paris","seine-maritime","seine-et-marne","yvelines",
+  "deux-sevres","somme","tarn","tarn-et-garonne","var","vaucluse","vendee",
+  "vienne","haute-vienne","vosges","yonne","territoire-de-belfort","essonne",
+  "hauts-de-seine","seine-saint-denis","val-de-marne","val-doise",
+  "guadeloupe","martinique","guyane","la-reunion","mayotte"
+];
+
+const VILLES_SLUG = [
+  "paris","marseille","lyon","toulouse","nice","nantes","montpellier","strasbourg",
+  "bordeaux","lille","rennes","reims","le-havre","saint-etienne","toulon",
+  "grenoble","dijon","angers","nimes","villeurbanne","clermont-ferrand",
+  "le-mans","aix-en-provence","brest","tours","amiens","limoges","annecy",
+  "perpignan","metz"
+];
 // ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
@@ -1126,45 +1295,120 @@ function resetCooldowns() {
   cooldownPrenom.length = 0;
   cooldownNom.length    = 0;
   cooldownSuffix.length = 0;
+  proCounter = 0;
+}
+
+// Compteur pour ratio pro exact : 1 pro tous les 10 emails
+let proCounter = 0;
+
+function buildProEmail(pays, secteur) {
+  const prenomsList = PRENOMS[pays] || PRENOMS.fr;
+  const nomsList    = NOMS[pays]    || NOMS.fr;
+
+  const p  = slugify(pickWithCooldown(prenomsList, cooldownPrenom));
+  const n  = slugify(pickWithCooldown(nomsList,    cooldownNom));
+  const pi = p[0];
+
+  // Choisir le secteur (si 'all', on en prend un au hasard parmi les secteurs réels)
+  const secteurKey = (secteur && secteur !== 'all')
+    ? secteur
+    : rand(['btp','genie','immo','auto','sante','finance','tech','industrie','transport','commerce','juridique','education']);
+
+  const entList = ENTREPRISES[secteurKey] || ENTREPRISES.btp;
+  const ent     = rand(entList);
+
+  // Pattern : 70% nominatif, 20% fonctionnel, 10% département+nom
+  const r = Math.random();
+  let local;
+  if (r < 0.40) {
+    local = `${p}.${n}`;
+  } else if (r < 0.60) {
+    local = `${pi}.${n}`;
+  } else if (r < 0.70) {
+    local = `${p}${n}`;
+  } else if (r < 0.80) {
+    local = rand(['contact','info','direction','rh','commercial','technique','communication']);
+  } else if (r < 0.90) {
+    const dept = rand(['rh','commercial','technique','direction','achat','communication']);
+    local = `${dept}.${p}.${n}`;
+  } else {
+    // Régional
+    const region = rand([...REGIONS_FR.slice(0,8), ...VILLES_SLUG.slice(0,10)]);
+    local = `${p}.${n}.${region.replace(/-/g,'')}`;
+  }
+
+  local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
+
+  // Extension : .fr majoritaire pour entreprises françaises, parfois .com
+  const ext = Math.random() < 0.65 ? '.fr' : '.com';
+
+  return `${local}@${ent}${ext}`;
 }
 
 function buildEmail(pays, secteur, ville) {
   const prenomsList = PRENOMS[pays] || PRENOMS.fr;
   const nomsList    = NOMS[pays]    || NOMS.fr;
-  const locaux      = DOMAINES_LOCAUX[pays] || [];
-  const extPays     = EXT_PAYS[pays] || '.fr';
+  const domPool     = DOMAINES_PAYS[pays] || DOMAINES_PAYS.fr;
+  const ext         = EXT_PAYS[pays] || '.com';
 
-  // Pioche avec cooldown anti-répétition
+  // Ratio exact : 1 pro tous les 10 emails (= 20 sur 200)
+  proCounter++;
+  if (proCounter % 10 === 0) {
+    return buildProEmail(pays, secteur);
+  }
+
+  // ~2% emails fantaisistes (réalisme : ça existe vraiment)
+  if (Math.random() < 0.02) {
+    const FANTAISIE_BASE = [
+      "coeur","scorpion","croute","elephant","beleck","coeurpolie",
+      "papillon","cactus","phoenix","tornade","galaxie","koala","licorne",
+      "tomate","biscuit","hurricane","cosmos","raton","canard","tigrou",
+      "mystere","vagabond","chocolat","viking","mammouth","caribou",
+      "labrador","zenith","diablo","tornado","loupblanc","blackwolf",
+      "sauvage","desperado","guerrier","fantome","shadow","ninja"
+    ];
+    const FANTAISIE_SUFFIXES = [
+      "75","69","13","33","06","31","59","93","44","67",
+      "2000","1994","1988","2001","1999","007","42","666","999","123",
+      ".du.nord","_pro","_officiel",".contact","-perso",".pro",
+      "_real","_off",".family","-team","_valid","_ok"
+    ];
+    const base = rand(FANTAISIE_BASE);
+    // Toujours coller un suffixe pour faire réel
+    const suf = rand(FANTAISIE_SUFFIXES);
+    const d2 = rand(domPool);
+    return `${base}${suf}@${d2}${ext}`;
+  }
+
+  // Email grand public
   const p = pickWithCooldown(prenomsList, cooldownPrenom);
   const n = pickWithCooldown(nomsList,    cooldownNom);
+  const d = rand(domPool);
 
   let local = buildLocal(p, n) + buildSuffix();
-
-  // Nettoyage
   local = local.replace(/[._-]{2,}/g, '.').replace(/[._-]$/,'').toLowerCase();
   if (!local) local = slugify(p) + slugify(n);
 
-  // ~20% email pro avec domaine entreprise du secteur
-  if (secteur !== 'all' && Math.random() < 0.20) {
-    const entList = ENTREPRISES[secteur];
-    if (entList) {
-      const ent = rand(entList);
-      const villeSlug = (ville && ville !== 'all')
-        ? rand(['','-'+slugify(ville),'-'+slugify(ville)])
-        : '';
-      return `${local}@${ent}${villeSlug}${extPays}`;
-    }
-  }
+  return `${local}@${d}${ext}`;
+}
 
-  // ~45% domaine local (extension pays), ~55% domaine global (extension fixe)
-  const useLocal = locaux.length > 0 && Math.random() < 0.45;
-  if (useLocal) {
-    const d = rand(locaux);
-    return `${local}@${d}${extPays}`;
-  } else {
-    const g = rand(DOMAINES_GLOBAUX);
-    return `${local}@${g.d}${g.ext}`;
-  }
+
+// ══════════════════════════════════════════════════════
+// SOURCES FICTIVES DE RECHERCHE
+// ══════════════════════════════════════════════════════
+const SOURCES = [
+  "Google Maps","Google Business","LinkedIn","PagesJaunes",
+  "Societe.com","Infogreffe","Kompass","Europages",
+  "Verif.com","Manageo","Pappers.fr","BodaccPro",
+  "CCI Business","Annuaire-Mairies.fr","Yelp Business",
+  "Trustpilot Pro","Annuaire-Entreprises.fr","DataGouv.fr",
+  "INSEE Sirene","Etablissements.fr","LesFurets Pro",
+  "BtoB Leaders","ZoomInfo","Hunter.io","Apollo.io",
+  "Dropcontact","Kaspr","Lusha","Waalaxy","Pharow"
+];
+
+function pickSource() {
+  return rand(SOURCES);
 }
 
 // ══════════════════════════════════════════════════════
@@ -1205,7 +1449,7 @@ function startScan() {
   const tbody   = document.getElementById('tbody');
   const dedup   = true;
 
-  // 1 email toutes les 2 secondes → ~5 emails / 10 secondes, effet naturel
+  // 1 email toutes les 3 secondes → rythme naturel de recherche
   scanInterval = setInterval(() => {
     if (scanCount >= scanTarget) { stopScan(); return; }
 
@@ -1227,6 +1471,7 @@ function startScan() {
     const sData = SECTEURS_DATA[secteur] || SECTEURS_DATA.all;
     const paysFlag = document.getElementById('pays').options[document.getElementById('pays').selectedIndex].text.split(' ')[0];
 
+    const source = pickSource();
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="color:var(--gray-400);font-size:0.7rem;font-family:'JetBrains Mono',monospace">${allEmails.length}</td>
@@ -1234,6 +1479,7 @@ function startScan() {
       <td><span class="badge-secteur" style="color:${sData.color};background:${sData.bg}">${sData.label}</span></td>
       <td class="td-pays">${paysFlag}</td>
       <td class="td-ville">${ville === 'all' ? '—' : ville}</td>
+      <td style="font-size:0.7rem;color:var(--gray-400);white-space:nowrap">🔍 ${source}</td>
       <td class="td-time">${now()}</td>
     `;
     tbody.insertBefore(tr, tbody.firstChild);
@@ -1251,7 +1497,7 @@ function startScan() {
     bar.classList.remove('animated');
     bar.style.width = pct + '%';
 
-  }, 2000); // 1 email toutes les 2 secondes
+  }, 3000); // 1 email toutes les 3 secondes
 }
 
 function stopScan() {
